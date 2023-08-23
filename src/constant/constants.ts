@@ -1,5 +1,6 @@
-export const portNumber=8000
+export const portNumber=3000
 export const userContext='/user'
+
 export const NODEMAILER_CONFIG = {
     service: 'gmail',
     auth: {

@@ -3,6 +3,7 @@ import {portNumber} from './src/constant/constants'
 import { userContext } from './src/constant/constants'
 import { userRouter } from './src/routers/router'
 import { mongo } from './src/provider/mongo/mongo'
+import {utils} from './src/utils/utils'
 class App{
     private app!: Express
     private port!: number
@@ -13,6 +14,7 @@ class App{
     startApp(){
         this.app=express()
         this.loadGlobalMiddleWare()
+        // utils.constructSwaggerSchema
         mongo.initiateMongoConnection
         this.loadRouter()
         this.initServer()

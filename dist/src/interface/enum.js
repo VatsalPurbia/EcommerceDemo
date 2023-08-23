@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SuccessMessage = exports.ExceptionMessage = exports.COLLECTION = exports.USER_TYPE = exports.HttpStatusMessage = exports.HttpStatusCode = void 0;
+exports.OrderStatus = exports.SuccessMessage = exports.ExceptionMessage = exports.COLLECTION = exports.USER_TYPE = exports.HttpStatusMessage = exports.HttpStatusCode = void 0;
 var HttpStatusCode;
 (function (HttpStatusCode) {
     HttpStatusCode[HttpStatusCode["CONTINUE"] = 100] = "CONTINUE";
@@ -114,6 +114,9 @@ var USER_TYPE;
 var COLLECTION;
 (function (COLLECTION) {
     COLLECTION["USER"] = "user";
+    COLLECTION["SESSION"] = "session";
+    COLLECTION["PRODUCT"] = "product";
+    COLLECTION["CHAT"] = "chat";
 })(COLLECTION || (exports.COLLECTION = COLLECTION = {}));
 var ExceptionMessage;
 (function (ExceptionMessage) {
@@ -142,6 +145,9 @@ var ExceptionMessage;
     ExceptionMessage["LINK_EXPIRE"] = "Link Expired";
     ExceptionMessage["CONNECTION_NOT_FOUND"] = "CONNECTION_NOT_FOUND";
     ExceptionMessage["FILE_ERROR"] = "FILE_NOT_FOUND";
+    ExceptionMessage["PRODUCT_NOT_EXSITS"] = "PRODUCT_NOT_EXSITS";
+    ExceptionMessage["NOT_VALID_PRODUCT_ID"] = "NOT_VALID_PRODUCT_ID";
+    ExceptionMessage["TOKEN_NOT_FOUND"] = "TOKEN_NOT_FOUND";
 })(ExceptionMessage || (exports.ExceptionMessage = ExceptionMessage = {}));
 var SuccessMessage;
 (function (SuccessMessage) {
@@ -149,4 +155,13 @@ var SuccessMessage;
     SuccessMessage["Mail_SEND"] = "Mail Send Successfully";
     SuccessMessage["USER_REGISTRATION_MAIL"] = "OTP Send to entered email address";
     SuccessMessage["USER_REGISTRATION"] = "Register successfully";
+    SuccessMessage["PRODUCT_EDITED"] = "PRODUCT_EDITED";
+    SuccessMessage["PRODUCT_DELETED"] = "PRODUCT_DELETED";
+    SuccessMessage["PRODUCT_CREATED"] = "PRODUCT_CREATED";
+    SuccessMessage["ALL_PRODUCTS"] = "ALL_PRODUCTS";
 })(SuccessMessage || (exports.SuccessMessage = SuccessMessage = {}));
+var OrderStatus;
+(function (OrderStatus) {
+    OrderStatus[OrderStatus["Active"] = 1] = "Active";
+    OrderStatus[OrderStatus["InActive"] = 2] = "InActive";
+})(OrderStatus || (exports.OrderStatus = OrderStatus = {}));

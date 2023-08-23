@@ -6,6 +6,9 @@ import { Request, Response } from "express";
 import { utils } from "../utils/utils";
 import { AcceptAny } from "../interface/type";
 class UserController {
+  home =async (req : Request ,res : Response) => {
+    res.send("Wellcome to our website")
+  }
   signin = async (req: Request, res: Response) => {
     try{
         const payload = {

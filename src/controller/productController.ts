@@ -4,7 +4,7 @@ import { ExceptionMessage, HttpStatusCode, HttpStatusMessage, SuccessMessage } f
 import { AcceptAny } from "../interface/type";
 import dotenv from 'dotenv'
 import { productServiceV1 } from "../service/product.service";
-import { fail } from "assert";
+import { RequestOptions } from "http";
 
 dotenv.config()
 
@@ -46,7 +46,26 @@ class productController{
             let err=responseUitls.errorResponse(error,ExceptionMessage.SOMETHING_WENT_WRONG)
             res.status(HttpStatusCode.BAD_REQUEST).send(err);
         }
+    };
+    getProduct = async(req: Request , res : Response) => {
+        try {
+            const payload : AcceptAny = req.query
+            let response = await productServiceV1.GetProducts(payload)
+            let finalResponce = responseUitls.successResponse({response}, SuccessMessage.ALL_PRODUCTS,HttpStatusMessage.OK)
+            res.status(HttpStatusCode.OK).send(finalResponce)
+        }
+        catch(error){
+            let err=responseUitls.errorResponse(error,ExceptionMessage.SOMETHING_WENT_WRONG)
+            res.status(HttpStatusCode.BAD_REQUEST).send(err);
+        }
+    };
+    post =async (req : Request , res : Response) => {
+        const payload : AcceptAny = req.body
+        
+
     }
+
+    
     
 }
 export const ProductControllerV1 = new productController()

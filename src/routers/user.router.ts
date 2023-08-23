@@ -8,13 +8,14 @@ class UserRouter{
     }
     userRouter(){
         // User Services
+        this.router.get('/home' , userController.home)
         this.router.post('/signup',userController.signin)
         this.router.post('/verify-new-user',userController.signinVerification)
         this.router.post('/login',userController.login)
         // Product Services 
         this.router.post('/addPost' , ProductControllerV1.AddProduct)
-        this.router.patch('/addPost' , ProductControllerV1.EditProduct)
-        this.router.delete('/addPost' , ProductControllerV1.DelteProduct)
+        this.router.patch('/editPost' , ProductControllerV1.EditProduct)
+        this.router.delete('/deltePost' , ProductControllerV1.DelteProduct)
         
         return this.router
     }

@@ -17,6 +17,8 @@ const nodenmailer_1 = require("../provider/nodemailer/nodenmailer");
 const redis_1 = require("../provider/redis/redis");
 const exception_utils_1 = require("../utils/exception.utils");
 const utils_1 = require("../utils/utils");
+const session_entity_1 = require("../entity/session.entity");
+const jsonwebtoken_1 = require("jsonwebtoken");
 class UserService {
     constructor() {
         this.signinRedis = (payload) => __awaiter(this, void 0, void 0, function* () {
@@ -64,12 +66,40 @@ class UserService {
         this.login = (payload) => __awaiter(this, void 0, void 0, function* () {
             try {
                 let data = yield user_entity_1.userEntity.findOne({
-                    username: payload.username,
-                    password: payload.password,
+                    username: payload.body.username,
+                    password: payload.body.password,
                 }, { _id: 1 }, {});
                 if (data) {
                     let redisSession = yield redis_1.redis.getKey(data._id);
-                    console.log(redisSession);
+                    if (!redisSession) {
+                        let dataSession = yield session_entity_1.sessionEntity.findOne({
+                            userId: data._id,
+                            isActive: true,
+                            deviceId: payload.headers.deviceId
+                        }, {});
+                        if (dataSession) {
+                            if (dataSession.deviceId !== payload.headers.deviceId) {
+                                yield session_entity_1.sessionEntity.saveData({
+                                    userId: data._id,
+                                    isActive: true,
+                                    deviceId: payload.headers.deviceId
+                                });
+                            }
+                            redis_1.redis.setKeyWithExpiry(`${data._id}`, `${data.deviceId}`, 9000);
+                        }
+                        else {
+                            yield session_entity_1.sessionEntity.saveData({
+                                userId: data._id,
+                                isActive: true,
+                                deviceId: payload.headers.deviceId
+                            });
+                            redis_1.redis.setKeyWithExpiry(`${data._id}`, `${data.deviceId}`, 9000);
+                        }
+                        yield session_entity_1.sessionEntity.updateMany({ userId: data === null || data === void 0 ? void 0 : data._id, deviceId: { $ne: payload.headers.deviceId } }, { isActive: false }, { userId: 1, isActive: 1, deviceId: 1 });
+                        const token = (0, jsonwebtoken_1.sign)({ _id: data === null || data === void 0 ? void 0 : data._id }, `${process.env.SECRET_KEY}`, {
+                            expiresIn: '1h',
+                        });
+                    }
                 }
                 else {
                     throw new exception_utils_1.CustomException(enum_1.ExceptionMessage.USER_NOT_FOUND, enum_1.HttpStatusMessage.NOT_FOUND);

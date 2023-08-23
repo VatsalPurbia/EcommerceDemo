@@ -109,7 +109,8 @@ export enum USER_TYPE {
 export enum COLLECTION {
     USER = 'user',
     SESSION = 'session',
-    PRODUCT = 'product'
+    PRODUCT = 'product',
+    CHAT = 'chat'
 }
 export enum ExceptionMessage {
     DEFAULT_MESSAGE = 'DEFAULT_MESSAGE',
@@ -138,7 +139,8 @@ export enum ExceptionMessage {
     CONNECTION_NOT_FOUND = 'CONNECTION_NOT_FOUND',
     FILE_ERROR = 'FILE_NOT_FOUND',
     PRODUCT_NOT_EXSITS = 'PRODUCT_NOT_EXSITS',
-    NOT_VALID_PRODUCT_ID = 'NOT_VALID_PRODUCT_ID'
+    NOT_VALID_PRODUCT_ID = 'NOT_VALID_PRODUCT_ID',
+    TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND"
 }
 export enum SuccessMessage {
     PASSWORD_CHANGED = 'Password Change Successfully',
@@ -147,5 +149,11 @@ export enum SuccessMessage {
     USER_REGISTRATION = 'Register successfully',
     PRODUCT_EDITED = 'PRODUCT_EDITED',
     PRODUCT_DELETED = 'PRODUCT_DELETED',
-    PRODUCT_CREATED = 'PRODUCT_CREATED'
+    PRODUCT_CREATED = 'PRODUCT_CREATED',
+    ALL_PRODUCTS = 'ALL_PRODUCTS',
+}
+
+export enum OrderStatus {
+    Active = 1,
+    InActive = 2,
 }

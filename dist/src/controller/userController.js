@@ -15,6 +15,9 @@ const user_service_1 = require("../service/user.service");
 const response_util_1 = require("../utils/response.util");
 class UserController {
     constructor() {
+        this.home = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            res.send("Wellcome to our website");
+        });
         this.signin = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const payload = {
@@ -48,10 +51,19 @@ class UserController {
         });
         this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                let payload = req.body;
-                let response = yield user_service_1.userService.login(payload);
+                const reqBody = req.body;
+                const reqHeaders = req.headers;
+                const payload = {
+                    body: reqBody,
+                    headers: reqHeaders
+                };
+                console.log(payload);
+                const response = yield user_service_1.userService.login(payload);
+                const finalResponce = response_util_1.responseUitls.successResponse(response, enum_1.HttpStatusMessage.ACCEPTED);
+                res.status(enum_1.HttpStatusCode.ACCEPTED).send(finalResponce);
             }
             catch (error) {
+                res.status(enum_1.HttpStatusCode.INTERNAL_SERVER_ERROR).send(response_util_1.responseUitls.errorResponse(error, enum_1.ExceptionMessage.EMAIL_NOT_EXISTS, enum_1.HttpStatusMessage.INTERNAL_SERVER_ERROR));
             }
         });
     }

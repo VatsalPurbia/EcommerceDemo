@@ -1,0 +1,21 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "description": "E-commerce Demo Application APIs",
+        "title": "E-Commerce",
+        "version": "1.0.0"
+    },
+    "components" :{
+        "securitySchemas" : {
+            "BasicAuth":{
+                "type" : "http",
+                "scheme" : "basic"
+            },
+            "BearerAuth":{
+                "type" : "http",
+                "scheme" : "bearer"
+            }
+        }
+    }
+
+}

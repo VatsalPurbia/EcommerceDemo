@@ -15,6 +15,7 @@ import { utils } from "../utils/utils";
 import { sessionEntity } from "../entity/session.entity";
 import {sign} from 'jsonwebtoken'
 
+
 class UserService {
   constructor() {}
   signinRedis = async (payload: AcceptAny) => {

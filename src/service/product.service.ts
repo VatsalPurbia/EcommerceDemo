@@ -87,7 +87,7 @@ class ProductService {
         }
     
   };
-  GetProducts = async (payload: AcceptAny) => {
+  GetProducts = async (payload : AcceptAny) => {
     try {
       const { page = 1, pageSize = 10 } = payload; // Default page and page size if not provided
   
@@ -111,6 +111,16 @@ class ProductService {
       throw error;
     }
   };
+  addCart =async (payload : AcceptAny) => {
+      const {productId} = payload  
+      if(!productId){
+        throw new CustomException(
+          ExceptionMessage.PRODUCT_NOT_EXSITS,
+          HttpStatusMessage.NOT_FOUND
+        )
+      }  
+      const productData = await productE.findOne({_id : productId},{})
+  }
   
 }
 
