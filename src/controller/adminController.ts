@@ -16,6 +16,7 @@ import { adminSessionE } from "../entity/admin.session.entity";
 import { nodeMailer } from "../provider/nodemailer/nodenmailer";
 import { redis } from "../provider/redis/redis";
 import { MAIL_SUBJECT } from "../constant/constants";
+import { error } from "console";
 class adminController {
   home = async (req: Request, res: Response) => {
     res.send("WELLCOME TO ADMIN HOME PAGE");
@@ -76,10 +77,13 @@ class adminController {
       const otp = await adminE.verifyOtp(payload.email);
       // console.log(payload.otp, "payloadotp herer")
       if (otp !== payload.otp) {
-        throw new CustomException(
-          ExceptionMessage.INCORRECT_OTP,
-          HttpStatusMessage.UNAUTHORIZED
-        ).getError();
+        const err = responseUitls.errorResponse(
+            error,
+            ExceptionMessage.INCORRECT_OTP,
+            HttpStatusMessage.UNAUTHORIZED
+        )
+        res.status(HttpStatusCode.UNAUTHORIZED).send(err)
+
       }
 
       console.log(payload, "-------------------");
