@@ -11,9 +11,11 @@ const productSchema = new mongoose_1.Schema({
     imageUrl: { type: String, default: "" },
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,
-        required: true
-    }
+        required: true,
+    },
 }, {
-    timestamps: true
+    timestamps: true,
 });
-exports.productModel = mongo_1.mongo.getConnection().model(enum_1.COLLECTION.PRODUCT, productSchema);
+exports.productModel = mongo_1.mongo
+    .getConnection()
+    .model(enum_1.COLLECTION.PRODUCT, productSchema);

@@ -12,7 +12,7 @@ import { nodeMailer } from "../provider/nodemailer/nodenmailer";
 import { redis } from "../provider/redis/redis";
 import { CustomException } from "../utils/exception.utils";
 import { utils } from "../utils/utils";
-import { sessionEntity } from "../entity/session.entity";
+import { userSessionE } from "../entity/session.entity";
 import {sign} from 'jsonwebtoken'
 
 
@@ -90,14 +90,14 @@ class UserService {
       if (data) {
         let redisSession = await redis.getKey(data._id)
         if(!redisSession){
-            let dataSession=await sessionEntity.findOne({
+            let dataSession=await userSessionE.findOne({
                 userId:data._id,
                 isActive:true,
                 deviceId:payload.headers.deviceId
             },{})
             if(dataSession)
             {if(dataSession.deviceId !== payload.headers.deviceId){
-               await sessionEntity.saveData({
+               await userSessionE.saveData({
                 userId : data._id,
                 isActive : true,
                 deviceId : payload.headers.deviceId
@@ -105,21 +105,22 @@ class UserService {
             }
                 redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,9000)
             }else{
-              await sessionEntity.saveData({
+              await userSessionE.saveData({
                 userId : data._id,
                 isActive : true,
                 deviceId : payload.headers.deviceId
               })
               redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,9000)
             }
-            await sessionEntity.updateMany(
+            await userSessionE.updateMany(
               { userId: data?._id, deviceId: { $ne: payload.headers.deviceId } },
               { isActive: false },
               { userId: 1, isActive: 1, deviceId: 1 }
           );
-          const token = sign({ _id: data?._id }, `${process.env.SECRET_KEY}`, {
+            const token = sign({ _id: data?._id }, `${process.env.SECRET_KEY}`, {
             expiresIn: '1h',
         });
+        return token
         }
       } else {
         throw new CustomException(

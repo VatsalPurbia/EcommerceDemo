@@ -34,7 +34,7 @@ class sessionCheck {
                     .send(response_util_1.responseUitls.errorResponse(error, enum_1.ExceptionMessage.TOKEN_NOT_FOUND, enum_1.HttpStatusMessage.AMBIGUOUS));
             }
             try {
-                let data = yield session_entity_1.sessionEntity.findOne({
+                let data = yield session_entity_1.userSessionE.findOne({
                     userId: decoded._id,
                     isActive: true,
                 }, {});

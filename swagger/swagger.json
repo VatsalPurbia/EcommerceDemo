@@ -1,0 +1,9 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "description": "E-commerce Demo Application APIs",
+        "title": "E-Commerce",
+        "version": "1.0.0"
+    }
+
+}

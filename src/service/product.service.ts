@@ -16,6 +16,7 @@ import { title } from "process";
 import { productModel } from "../model/product.schema";
 class ProductService {
   AddProduct = async (payload: AcceptAny) => {
+    
     try {
       const { title, price, description, imageUrl, userID } = payload;
       await productE.saveData({

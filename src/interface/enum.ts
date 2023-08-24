@@ -110,8 +110,10 @@ export enum COLLECTION {
     USER = 'user',
     SESSION = 'session',
     PRODUCT = 'product',
-    CHAT = 'chat'
-}
+    CHAT = 'chat',
+    ADMIN = 'admin',
+    ADMIN_SESSION = 'adminSession'
+ }
 export enum ExceptionMessage {
     DEFAULT_MESSAGE = 'DEFAULT_MESSAGE',
     EMAIL_ALREADY_EXIST = 'EMAIL_ALREADY_EXIST',
@@ -140,7 +142,9 @@ export enum ExceptionMessage {
     FILE_ERROR = 'FILE_NOT_FOUND',
     PRODUCT_NOT_EXSITS = 'PRODUCT_NOT_EXSITS',
     NOT_VALID_PRODUCT_ID = 'NOT_VALID_PRODUCT_ID',
-    TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND"
+    TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND",
+    ADMIN_NOT_FOUND = "ADMIN_NOT_FOUND",
+   
 }
 export enum SuccessMessage {
     PASSWORD_CHANGED = 'Password Change Successfully',

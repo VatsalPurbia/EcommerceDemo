@@ -16,7 +16,6 @@ class UserRouter{
         this.router.post('/addPost' , ProductControllerV1.AddProduct)
         this.router.patch('/editPost' , ProductControllerV1.EditProduct)
         this.router.delete('/deltePost' , ProductControllerV1.DelteProduct)
-        
         return this.router
     }
 }

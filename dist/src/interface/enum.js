@@ -117,6 +117,8 @@ var COLLECTION;
     COLLECTION["SESSION"] = "session";
     COLLECTION["PRODUCT"] = "product";
     COLLECTION["CHAT"] = "chat";
+    COLLECTION["ADMIN"] = "admin";
+    COLLECTION["ADMIN_SESSION"] = "adminSession";
 })(COLLECTION || (exports.COLLECTION = COLLECTION = {}));
 var ExceptionMessage;
 (function (ExceptionMessage) {
@@ -148,6 +150,7 @@ var ExceptionMessage;
     ExceptionMessage["PRODUCT_NOT_EXSITS"] = "PRODUCT_NOT_EXSITS";
     ExceptionMessage["NOT_VALID_PRODUCT_ID"] = "NOT_VALID_PRODUCT_ID";
     ExceptionMessage["TOKEN_NOT_FOUND"] = "TOKEN_NOT_FOUND";
+    ExceptionMessage["ADMIN_NOT_FOUND"] = "ADMIN_NOT_FOUND";
 })(ExceptionMessage || (exports.ExceptionMessage = ExceptionMessage = {}));
 var SuccessMessage;
 (function (SuccessMessage) {

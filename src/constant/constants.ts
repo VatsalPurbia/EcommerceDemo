@@ -1,5 +1,8 @@
 export const portNumber=3000
 export const userContext='/user'
+export const adminContext ='/admin'
+
+export const swaggerContext = '/swagger/api-doc'
 
 export const NODEMAILER_CONFIG = {
     service: 'gmail',
@@ -9,5 +12,6 @@ export const NODEMAILER_CONFIG = {
     },
 };
 export enum MAIL_SUBJECT {
-    VERIFICATION_OTP = 'Otp Verification'
+    VERIFICATION_OTP = 'Otp Verification',
+    ADMIN_OTP_VERIFICATION = 'ADMIN OTP VERIFICATION'
 }

@@ -1,6 +1,9 @@
 import { Redis, RedisOptions } from 'ioredis';
 
 class RedisStorage {
+    setKeyExpiry(arg0: string, arg1: string) {
+        throw new Error("Method not implemented.");
+    }
     private client: Redis;
 
     constructor() {

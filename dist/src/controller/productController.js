@@ -71,6 +71,9 @@ class productController {
                 res.status(enum_1.HttpStatusCode.BAD_REQUEST).send(err);
             }
         });
+        this.post = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const payload = req.body;
+        });
     }
 }
 exports.ProductControllerV1 = new productController();

@@ -96,6 +96,13 @@ class ProductService {
                 throw error;
             }
         });
+        this.addCart = (payload) => __awaiter(this, void 0, void 0, function* () {
+            const { productId } = payload;
+            if (!productId) {
+                throw new exception_utils_1.CustomException(enum_1.ExceptionMessage.PRODUCT_NOT_EXSITS, enum_1.HttpStatusMessage.NOT_FOUND);
+            }
+            const productData = yield product_entity_1.productE.findOne({ _id: productId }, {});
+        });
     }
 }
 exports.productServiceV1 = new ProductService();

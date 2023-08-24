@@ -11,6 +11,7 @@ import { AcceptAny } from "../interface/type";
 import { userSessionE } from "../entity/session.entity";
 import { CustomException } from "../utils/exception.utils";
 import { responseUitls } from "../utils/response.util";
+import { adminSessionE } from "../entity/admin.session.entity";
 dotenv.config();
 
 class sessionCheck {
@@ -37,15 +38,15 @@ class sessionCheck {
         );
     }
     try {
-      let data = await userSessionE.findOne(
+      let data = await adminSessionE.findOne(
         {
-          userId: decoded._id,
+          adminId: decoded._id,
           isActive: true,
         },
         {}
       );
       if (data.length > 0) {
-        req.headers.userId = decoded._id;
+        req.headers.adminId = decoded._id;
         next();
       } else {
         throw new CustomException(

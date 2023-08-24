@@ -72,14 +72,14 @@ class UserService {
                 if (data) {
                     let redisSession = yield redis_1.redis.getKey(data._id);
                     if (!redisSession) {
-                        let dataSession = yield session_entity_1.sessionEntity.findOne({
+                        let dataSession = yield session_entity_1.userSessionE.findOne({
                             userId: data._id,
                             isActive: true,
                             deviceId: payload.headers.deviceId
                         }, {});
                         if (dataSession) {
                             if (dataSession.deviceId !== payload.headers.deviceId) {
-                                yield session_entity_1.sessionEntity.saveData({
+                                yield session_entity_1.userSessionE.saveData({
                                     userId: data._id,
                                     isActive: true,
                                     deviceId: payload.headers.deviceId
@@ -88,17 +88,18 @@ class UserService {
                             redis_1.redis.setKeyWithExpiry(`${data._id}`, `${data.deviceId}`, 9000);
                         }
                         else {
-                            yield session_entity_1.sessionEntity.saveData({
+                            yield session_entity_1.userSessionE.saveData({
                                 userId: data._id,
                                 isActive: true,
                                 deviceId: payload.headers.deviceId
                             });
                             redis_1.redis.setKeyWithExpiry(`${data._id}`, `${data.deviceId}`, 9000);
                         }
-                        yield session_entity_1.sessionEntity.updateMany({ userId: data === null || data === void 0 ? void 0 : data._id, deviceId: { $ne: payload.headers.deviceId } }, { isActive: false }, { userId: 1, isActive: 1, deviceId: 1 });
+                        yield session_entity_1.userSessionE.updateMany({ userId: data === null || data === void 0 ? void 0 : data._id, deviceId: { $ne: payload.headers.deviceId } }, { isActive: false }, { userId: 1, isActive: 1, deviceId: 1 });
                         const token = (0, jsonwebtoken_1.sign)({ _id: data === null || data === void 0 ? void 0 : data._id }, `${process.env.SECRET_KEY}`, {
                             expiresIn: '1h',
                         });
+                        return token;
                     }
                 }
                 else {
