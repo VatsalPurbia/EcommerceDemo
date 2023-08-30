@@ -8,7 +8,7 @@ import {
   WellcomeMsg,
 } from "../interface/enum";
 import { responseUitls } from "../utils/response.util";
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 import { utils } from "../utils/utils";
 import { AcceptAny } from "../interface/type";
 import { adminE } from "../entity/admin.entity";
@@ -19,6 +19,7 @@ import { redis } from "../provider/redis/redis";
 import { MAIL_SUBJECT } from "../constant/constant";
 import { error } from "console";
 import { adminLogin } from "../interface/gobal.interface";
+import { resolveScope } from "sequelize-typescript";
 
 class adminController {
   /**
@@ -94,7 +95,7 @@ class adminController {
         throw new CustomException(
           ExceptionMessage.ADMIN_NOT_FOUND,
           HttpStatusMessage.NOT_FOUND
-        ).getError()
+        ).getError();
       }
       const otp = await adminE.verifyOtp(payload.email);
       if (otp !== payload.otp) {
@@ -147,40 +148,130 @@ class adminController {
     }
   }
   /**
-   * @description This API is used to remove user 
+   * @description This API is used to remove user
    * @param req UserId to find userinfo
    * @param res All Users
    */
-  async removeUser (req:Request, res:Response) {
+  async removeUser(req: Request, res: Response) {
     try {
-        const {userId} = req.body;
-        const UserData : any = await adminE.findUser(userId);
-        if(!UserData){
+      const { userId } = req.body;
+      const UserData: any = await adminE.findUser(userId);
+      if (!UserData) {
+        const err = responseUitls.errorResponse(
+          UserData,
+          ExceptionMessage.USER_DATA_FOUND,
+          HttpStatusMessage.NOT_FOUND
+        );
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err);
+      }
+      const DataRemoved: any = await adminE.removeAccount(userId);
+      const finalResponce = responseUitls.successResponse(
+        DataRemoved,
+        SuccessMessage.USER_ACCOUNT_REMOVED,
+        HttpStatusMessage.OK
+      );
+      return res.status(HttpStatusCode.OK).send(finalResponce);
+    } catch (err) {
+      console.error(err);
+      const errorResponse = responseUitls.errorResponse(
+        error,
+        ExceptionMessage.SOMETHING_WENT_WRONG,
+        HttpStatusMessage.INTERNAL_SERVER_ERROR
+      );
+      return res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .send(errorResponse);
+    }
+  }
+ /**
+   * @description This API is used to logout Admin
+   * @param req Token will be passed in authorization
+   * @param res Admin Session Logout 
+   */
+  async logout(req: Request, res: Response) {
+    try{
+
+      const adminId = req.body.id;
+      const response: any = await adminSessionE.adminLogout(adminId);
+      const finalData = responseUitls.successResponse(
+        response,
+        SuccessMessage.SUCCESSFULLY_LOGEDOUT,
+        HttpStatusMessage.ACCEPTED
+        );
+        res.status(HttpStatusCode.ACCEPTED).send(finalData);
+      }
+      catch(error){
+        console.log(error)
+        const errResponce = responseUitls.errorResponse(
+          error,
+          ExceptionMessage.FAILED_TO_LOGOUT,
+          HttpStatusMessage.INTERNAL_SERVER_ERROR
+        )
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+      }
+  }
+   /**
+   * @description This API is used when Admin needs to reset password
+   * @param req email is passed 
+   * @param res Mail is sent to email for Verification process 
+   */
+  async forgetPassword(req:Request, res:Response) {
+    try {
+        const {email} = req.body;
+        const adminData : any = await adminSessionE.VerifyAdmin(email)
+        if(!adminData) {
             const err = responseUitls.errorResponse(
-              UserData,
-              ExceptionMessage.USER_DATA_FOUND,
+              adminData,
+              ExceptionMessage.ADMIN_NOT_FOUND,
               HttpStatusMessage.NOT_FOUND
             )
-            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err);
+            return res.status(HttpStatusCode.NOT_FOUND).send(err);
         }
-       const DataRemoved : any=  await adminE.removeAccount(userId)
-        const finalResponce = responseUitls.successResponse(
-          DataRemoved,
-          SuccessMessage.USER_ACCOUNT_REMOVED,
-          HttpStatusMessage.OK
-          )
-        return res.status(HttpStatusCode.OK).send(finalResponce);
+        const response : any = await adminSessionE.forgotPassEmailVerify(email)
+        const finalData = responseUitls.successResponse(
+          response,
+          SuccessMessage.SUCCESSFULLY_LOGEDOUT,
+          HttpStatusMessage.ACCEPTED
+          );
+         return res.status(HttpStatusCode.CREATED).send(finalData);
 
     } catch(err) {
         console.error(err);
-        const errorResponse = responseUitls.errorResponse(
+        const errResponce = responseUitls.errorResponse(
           error,
-          ExceptionMessage.SOMETHING_WENT_WRONG,
+          ExceptionMessage.FAILED_TO_VERIFY,
           HttpStatusMessage.INTERNAL_SERVER_ERROR
         )
-        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errorResponse);
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
     }
-}
+  }/**
+   * @description This API is used when Admin needs to reset password
+   * @param req email , otp and newPassword that he wanna set 
+   * @param res Password is changed
+   */
+  async setNewPass(req : Request , res : Response){
+   try{
+    const {email,otp,newPassword} = req.body
+    const result : any = await adminSessionE.setNewPassword(email,otp.toString(),newPassword)
+    const finalResponce = responseUitls.successResponse(
+      result,
+      SuccessMessage.PASSWORD_CHANGED,
+      HttpStatusMessage.ACCEPTED
+    )
+    res.status(HttpStatusCode.ACCEPTED).send(finalResponce)
+
+   }
+   catch(error){
+    console.log(error)
+    const errResponce = responseUitls.errorResponse(
+      error,
+      ExceptionMessage.FAILED_TO_CHANGE_PASSWORD,
+      HttpStatusMessage.INTERNAL_SERVER_ERROR
+    )
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+   }
+  }
+
 }
 
 export const adminControllerV1 = new adminController();

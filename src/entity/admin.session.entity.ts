@@ -4,6 +4,12 @@ import { AcceptAny } from "../interface/type";
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { AdminsessionModel } from "../model/admin.session.schema";
+import { utils } from "../utils/utils";
+import { OTP, RedisExpirydata } from "../interface/enum";
+import { nodeMailer } from "../provider/nodemailer/nodenmailer";
+import { MAIL_SUBJECT } from "../constant/constant";
+import { error } from "console";
+import { adminE } from "./admin.entity";
 // TODO dotenv should have a proper file for where it is called 
 dotenv.config()
 class SessionEntity extends BaseEntity {
@@ -64,6 +70,25 @@ class SessionEntity extends BaseEntity {
     } catch (error) {
       throw error;
     }
+  }
+  async adminLogout(adminId : string){
+    await this.updateOne({adminId : adminId}, {isActive : false},{})
+  }
+  async VerifyAdmin(email: string){
+    await this.findOne({email : email},{})
+  }
+  async forgotPassEmailVerify(email : string){
+    const subject = MAIL_SUBJECT.ADMIN_OTP_FORGOTPASSWORD_KEY
+    let otp =  utils.otpGenerator(OTP.ADMIN_OTP)
+    nodeMailer.sendMail(`${email}`,`${otp}`,subject,`${email}`)
+    await redis.setKeyWithExpiry(`${email}OTP` , `${otp}`, RedisExpirydata.ADMIN_LOGIN_DATA)
+  }
+  async setNewPassword(email: string, otp: string, newPassword : string){
+    const redisOtp = await redis.getKey(`${email}OTP`)
+    if(redisOtp !== otp){
+      throw error
+    }
+    await adminE.updateOne({email : email},{password : newPassword},{})
   }
 }
 export const adminSessionE = new SessionEntity();

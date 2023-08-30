@@ -9,6 +9,10 @@ import { responseUitls } from "../utils/response.util";
 import { Request, Response } from "express";
 import { WellcomeMsg } from "../interface/enum";
 import { AcceptAny } from "../interface/type";
+import { userSessionE } from "../entity/session.entity";
+import { RedisScripts } from "redis";
+import { userEntity } from "../entity/user.entity";
+import { adminSessionE } from "../entity/admin.session.entity";
 class UserController {
     /**
    * @param req 
@@ -102,6 +106,96 @@ class UserController {
         );
     }
   };
+  /**
+   * @description This api is used to logout User
+   * @param req - 
+   * @param res Killing session 
+   */
+  async logout (req : Request , res : Response ){
+    try{
+
+      const userId = req.body.id;
+      const response: any = await userSessionE.userlogout(userId);
+      const finalData = responseUitls.successResponse(
+        response,
+        SuccessMessage.SUCCESSFULLY_LOGEDOUT,
+        HttpStatusMessage.ACCEPTED
+        );
+        res.status(HttpStatusCode.ACCEPTED).send(finalData);
+      }
+      catch(error){
+        console.log(error)
+        const errResponce = responseUitls.errorResponse(
+          error,
+          ExceptionMessage.FAILED_TO_LOGOUT,
+          HttpStatusMessage.INTERNAL_SERVER_ERROR
+        )
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+      }
+  }
+ /**
+   * @description This api is used for reseting password
+   * @param req - email
+   * @param res Sending otp to email for verification
+   */
+  async forgotPassword(req : Request , res : Response){
+    try {
+      const {email} = req.body;
+      const UserData : any = await userEntity.findUser(email)
+      if(!UserData) {
+          const err = responseUitls.errorResponse(
+            UserData,
+            ExceptionMessage.USER_NOT_FOUND,
+            HttpStatusMessage.NOT_FOUND
+          )
+          return res.status(HttpStatusCode.NOT_FOUND).send(err);
+      }
+      const response : any = await adminSessionE.forgotPassEmailVerify(email)
+      const finalData = responseUitls.successResponse(
+        response,
+        SuccessMessage.SUCCESSFULLY_LOGEDOUT,
+        HttpStatusMessage.ACCEPTED
+        );
+       return res.status(HttpStatusCode.CREATED).send(finalData);
+
+  } catch(err) {
+      console.error(err);
+      const errResponce = responseUitls.errorResponse(
+        err,
+        ExceptionMessage.FAILED_TO_VERIFY,
+        HttpStatusMessage.INTERNAL_SERVER_ERROR
+      )
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+  }
+  /**
+   * @description This api is used for reseting password
+   * @param req - email , otp , NewPassword
+   * @param res New password is set
+   */
+  
+  }
+  async resetPassword(req : Request , res : Response){
+    try{
+      const {email,otp,newPassword} = req.body
+      const result : any = await  userEntity.setNewPassword(email,otp.toString(),newPassword)
+      const finalResponce = responseUitls.successResponse(
+        result,
+        SuccessMessage.PASSWORD_CHANGED,
+        HttpStatusMessage.ACCEPTED
+      )
+      res.status(HttpStatusCode.ACCEPTED).send(finalResponce)
+  
+     }
+     catch(error){
+      console.log(error)
+      const errResponce = responseUitls.errorResponse(
+        error,
+        ExceptionMessage.FAILED_TO_CHANGE_PASSWORD,
+        HttpStatusMessage.INTERNAL_SERVER_ERROR
+      )
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+     }
+  }
   
 }
 export const userController = new UserController();

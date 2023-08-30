@@ -10,6 +10,7 @@ import { utils } from "./src/utils/utils";
 import { productRouterV1 } from "./src/routers/porduct.routes";
 import { socketStart } from "./src/socketio/socket";
 import cors from "cors";
+import { sessionCheckv1 } from "./src/middleware/jwtVerification";
 // import { mqttController } from "./src/controller/mqtt.controller";
 // TODO Add eslint to code , Add comments for function
 class App {
@@ -50,7 +51,7 @@ loadGlobalMiddleWare() {
   }
   loadRouter() {
     this.app.use(this.swaggerContext, serve, setup(swaggerDocument));
-    this.app.use(this.context, userRouter.userRouter());
+    this.app.use(this.context ,userRouter.userRouter());
     this.app.use(this.adminContext ,adminRouterV1.adminrouter());
     this.app.use(this.productContext,productRouterV1.productRouter())
   }
