@@ -1,9 +1,11 @@
-import { MAIL_SUBJECT } from "../constant/constants";
+import { MAIL_SUBJECT } from "../constant/constant";
 import { userEntity } from "../entity/user.entity";
 import {
   ExceptionMessage,
   HttpStatusCode,
   HttpStatusMessage,
+  OTP,
+  RedisExpirydata,
   SuccessMessage,
 } from "../interface/enum";
 import jwt from "jsonwebtoken";
@@ -27,16 +29,16 @@ class UserService {
       );
       console.log(data, "------------");
       if (data == null) {
-        let token = utils.otpGenerator(6);
+        let token = utils.otpGenerator(OTP.USER_OTP);
         console.log(token);
         const subject = MAIL_SUBJECT.VERIFICATION_OTP;
         await nodeMailer.sendMail(payload.email, token, subject, payload.name);
-        redis.setKeyWithExpiry(`${token}`, `${payload.email}`, 300);
+        redis.setKeyWithExpiry(`${token}`, `${payload.email}`, RedisExpirydata.USER_SINGIN_REDIS);
         let payloadData = JSON.stringify(payload);
         redis.setKeyWithExpiry(
           `${payload.email}+${token}`,
           `${payloadData}`,
-          300
+          RedisExpirydata.USER_SINGIN_REDIS
         );
         return SuccessMessage.USER_REGISTRATION_MAIL;
       }
@@ -103,14 +105,14 @@ class UserService {
                 deviceId : payload.headers.deviceId
                })
             }
-                redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,9000)
+                redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,RedisExpirydata.USER_SINGIN_REDIS)
             }else{
               await userSessionE.saveData({
                 userId : data._id,
                 isActive : true,
                 deviceId : payload.headers.deviceId
               })
-              redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,9000)
+              redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,RedisExpirydata.USER_SINGIN_REDIS)
             }
             await userSessionE.updateMany(
               { userId: data?._id, deviceId: { $ne: payload.headers.deviceId } },
@@ -132,5 +134,9 @@ class UserService {
       throw error;
     }
   };
+  async findAddress (userId: string, addressId: string) {
+    const address = await userEntity.findOne({_id:userId,'address._id':addressId},{})
+    return address;
+}
 }
 export const userService = new UserService();

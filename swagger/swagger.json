@@ -4,6 +4,67 @@
         "description": "E-commerce Demo Application APIs",
         "title": "E-Commerce",
         "version": "1.0.0"
-    }
+    },
+    "components": {
+        "securitySchemes": {
+            "BasicAuth": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "parameters": {
+            "APIKey": {
+                "name": "api-key",
+                "in": "header",
+                "description": "API Key",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "xxxx"
+                }
+            },
+          
+            "DeviceType": {
+                "name": "device-type",
+                "in": "header",
+                "description": "Device Type",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "xxxx"
+                }
+            },
+            "DeviceModel": {
+                "name": "device-model",
+                "in": "header",
+                "description": "Device Model",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "xxxx"
+                }
+            },
+            "lang": {
+                "name": "lang",
+                "in": "header",
+                "description": "language",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "example": "xxxx"
+                }
+            }
+            
+        }
+    },
+    "paths": {
+        "/user/home":{
+            "$ref" : "ecom/user-swaggeer.json#/paths/get-home"
+        }
 
+    }
 }

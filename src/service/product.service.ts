@@ -1,4 +1,4 @@
-import { MAIL_SUBJECT } from "../constant/constants";
+import { MAIL_SUBJECT } from "../constant/constant";
 import { userEntity } from "../entity/user.entity";
 import {
   ExceptionMessage,
@@ -18,14 +18,16 @@ class ProductService {
   AddProduct = async (payload: AcceptAny) => {
     
     try {
-      const { title, price, description, imageUrl, userID } = payload;
+      const { title, price, quantity, description, imageUrl, adminId } = payload;
       await productE.saveData({
         title: title,
         price: price,
+        quantity : quantity,
         description: description,
         imageUrl: imageUrl,
-        userId: userID,
+        adminId: adminId,
       });
+      console.log(payload)
     } catch (error) {
       throw error;
     }
@@ -112,16 +114,8 @@ class ProductService {
       throw error;
     }
   };
-  addCart =async (payload : AcceptAny) => {
-      const {productId} = payload  
-      if(!productId){
-        throw new CustomException(
-          ExceptionMessage.PRODUCT_NOT_EXSITS,
-          HttpStatusMessage.NOT_FOUND
-        )
-      }  
-      const productData = await productE.findOne({_id : productId},{})
-  }
+  
+ 
   
 }
 

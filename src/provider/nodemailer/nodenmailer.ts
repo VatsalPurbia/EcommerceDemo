@@ -1,5 +1,5 @@
 
-import { NODEMAILER_CONFIG } from '../../constant/constants';
+import { NODEMAILER_CONFIG } from '../../constant/constant';
 import { INODEMAILER_CONFIG } from '../../interface/gobal.interface';
 import { CustomException } from '../../utils/exception.utils';
 import { AcceptAny } from '../../interface/type';

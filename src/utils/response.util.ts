@@ -45,5 +45,7 @@ class ResponseUitls{
     private getStatusCode(code: keyof typeof HttpStatusCode): number {
         return HttpStatusCode[code] || HttpStatusCode.BAD_REQUEST;
     }
+
+    
 }
 export const responseUitls=new ResponseUitls()

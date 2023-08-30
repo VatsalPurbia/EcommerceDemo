@@ -23,7 +23,10 @@ export default class BaseEntity {
 
     async saveData<Type>(data: Type) {
         try {
-            return await new this.model(data).save();
+            console.log(data, "were here in save data ")
+            // return await new this.model(data).save();
+            return await new this.model(data).save()
+
         } catch (error) {
             return Promise.reject(error);
         }
@@ -91,13 +94,6 @@ export default class BaseEntity {
         }
     }
 
-    async aggregateData(aggregateArray: PipelineStage[], options: AggregateOptions) {
-        try {
-            return await this.model.aggregate(aggregateArray, options).exec();
-        } catch (error) {
-            return Promise.reject(error);
-        }
-    }
 
     paginationPipeline(page?: number, limit?: number) {
         const paginationQuery = [];

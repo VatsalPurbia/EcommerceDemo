@@ -1,14 +1,17 @@
+import { nodemailerConfig } from "../../dotenvConfig"
+
 export const portNumber=3000
 export const userContext='/user'
 export const adminContext ='/admin'
-
+export const productContext = '/product'
 export const swaggerContext = '/swagger/api-doc'
 
+
 export const NODEMAILER_CONFIG = {
-    service: 'gmail',
+    service: nodemailerConfig.SERVICE,
     auth: {
-        user: 'vatsal.purbia@appinventiv.com',
-        pass: 'owkfiosiovbdwdjc',
+        user: nodemailerConfig.USER,
+        pass: nodemailerConfig.PASS,
     },
 };
 export enum MAIL_SUBJECT {

@@ -17,3 +17,17 @@ export interface INODEMAILER_CONFIG {
         pass: string;
     };
 }
+
+export interface adminLogin {
+    email : string;
+    password : string;
+}
+
+export interface addProruct{
+        title: string,
+        price: number,
+        quantity : number,
+        description: string,
+        imageUrl: string,
+        adminId: string,
+}

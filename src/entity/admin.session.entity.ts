@@ -4,6 +4,7 @@ import { AcceptAny } from "../interface/type";
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { AdminsessionModel } from "../model/admin.session.schema";
+// TODO dotenv should have a proper file for where it is called 
 dotenv.config()
 class SessionEntity extends BaseEntity {
   constructor() {

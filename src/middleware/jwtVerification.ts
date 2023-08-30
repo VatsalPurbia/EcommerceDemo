@@ -45,7 +45,7 @@ class sessionCheck {
         {}
       );
       if (data.length > 0) {
-        req.headers.userId = decoded._id;
+        req.body.id = decoded._id;
         next();
       } else {
         throw new CustomException(
