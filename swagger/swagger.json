@@ -27,7 +27,16 @@
                     "example": "xxxx"
                 }
             },
-          
+            "tokeAuthorization" : {
+                "name" : "authorization",
+                "in" : "header",
+                "description" : "Jwt Token",
+                "required" : true,
+                "schema" :{
+                    "type" : "string",
+                    "example" : "Jwt Token"
+                }
+            },
             "DeviceType": {
                 "name": "device-type",
                 "in": "header",
@@ -63,7 +72,19 @@
     },
     "paths": {
         "/user/home":{
-            "$ref" : "ecom/user-swaggeer.json#/paths/get-home"
+            "$ref" : "ecom/user-swagger.json#/paths/get-home"
+        },
+        "/user/singup":{
+            "$ref" : "ecom/user-swagger.json#/paths/post-singin"
+        },
+        "/user/verify-new-user":{
+            "$ref" : "ecom/user-swagger.json#/paths/post-singinVerification"
+        },
+        "/user/login" :{
+            "$ref" : "ecom/user-swagger.json#/paths/post-login"
+        },
+        "/user/logout":{
+            "$ref" : "ecom/user-swagger.json#/paths/patch-logout"
         }
 
     }

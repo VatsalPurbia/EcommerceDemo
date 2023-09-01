@@ -1,4 +1,4 @@
-import { MAIL_SUBJECT } from "../constant/constant";
+import { MAIL_SUBJECT } from "../constant/constants";
 import { userEntity } from "../entity/user.entity";
 import {
   ExceptionMessage,
@@ -15,10 +15,11 @@ import { productE } from "../entity/product.entity";
 import { title } from "process";
 import { productModel } from "../model/product.schema";
 class ProductService {
-  AddProduct = async (payload: AcceptAny) => {
+  AddProduct = async (payload: AcceptAny , adminId : string) => {
     
     try {
-      const { title, price, quantity, description, imageUrl, adminId } = payload;
+      const { title, price, quantity, description, imageUrl } = payload;
+
       await productE.saveData({
         title: title,
         price: price,
@@ -32,12 +33,12 @@ class ProductService {
       throw error;
     }
   };
-  EditProducts = async (payload: AcceptAny) => {
+  EditProducts = async (payload: AcceptAny , adminId : string) => {
     try {
       const { title, price, description, imageUrl } = payload.body;
       const { productId } = payload.query;
       const ExsistingProduct = productE.findOne(
-        { _id: productId },
+        { _id: productId , adminId : adminId },
         {
           title: 1,
           price: 1,

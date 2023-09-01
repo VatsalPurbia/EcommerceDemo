@@ -1,6 +1,6 @@
 import express, { Express } from "express";
-import { portNumber } from "./src/constant/constant";
-import { userContext, swaggerContext, adminContext , productContext} from "./src/constant/constant";
+import { portNumber } from "./src/constant/constants";
+import { userContext, swaggerContext, adminContext , productContext} from "./src/constant/constants";
 import { userRouter } from "./src/routers/router";
 import { adminRouterV1 } from "./src/routers/router";
 import { mongo } from "./src/provider/mongo/mongo";

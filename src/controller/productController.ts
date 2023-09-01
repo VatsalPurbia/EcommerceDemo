@@ -23,9 +23,10 @@ import { status } from "../model/order.schema";
 class productController {
   AddProduct = async (req: Request, res: Response) => {
     try {
+      const adminId = req.body.id
       const payload: addProruct = req.body;
       console.log(payload);
-      let response = await productServiceV1.AddProduct(payload);
+      let response = await productServiceV1.AddProduct(payload , adminId);
       let finalResponce = responseUitls.successResponse(
         { response },
         SuccessMessage.PRODUCT_CREATED,
@@ -47,12 +48,13 @@ class productController {
 
   EditProduct = async (req: Request, res: Response) => {
     try {
+      const adminId = req.body.id
       const payload: AcceptAny = {
         body: req.body,
         query: req.query,
       };
       console.log(payload);
-      let response = await productServiceV1.EditProducts(payload);
+      let response = await productServiceV1.EditProducts(payload , adminId);
       let finalResponce = responseUitls.successResponse(
         { response },
         SuccessMessage.PRODUCT_EDITED,

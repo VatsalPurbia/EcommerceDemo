@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { NODEMAILER_CONFIG } from './src/constant/constant'
+import { NODEMAILER_CONFIG } from './src/constant/constants'
 
 dotenv.config()
 

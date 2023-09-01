@@ -22,6 +22,7 @@ const AddessSchema = new Schema<IAddress>({
   street: String,
   city: String,
   state: String,
+  zipCode : String,
   description: String,
 });
 const userSchema = new Schema<IUser>({

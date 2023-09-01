@@ -16,7 +16,7 @@ import { CustomException } from "../utils/exception.utils";
 import { adminSessionE } from "../entity/admin.session.entity";
 import { nodeMailer } from "../provider/nodemailer/nodenmailer";
 import { redis } from "../provider/redis/redis";
-import { MAIL_SUBJECT } from "../constant/constant";
+import { MAIL_SUBJECT } from "../constant/constants";
 import { error } from "console";
 import { adminLogin } from "../interface/gobal.interface";
 import { resolveScope } from "sequelize-typescript";

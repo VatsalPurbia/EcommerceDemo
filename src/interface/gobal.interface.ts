@@ -29,5 +29,4 @@ export interface addProruct{
         quantity : number,
         description: string,
         imageUrl: string,
-        adminId: string,
 }

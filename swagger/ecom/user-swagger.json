@@ -118,10 +118,37 @@
                 ]
 
             }
+        },
+        "patch-logout":{
+            "patch" :{
+                "tags" : [
+                    "User-ONboarding"
+                ],
+                "description" : "This api is used for logout and ending the user session",
+                "security" :[{
+                    "BasicAuth" : []
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "parameters": [{
+                    "$ref": "../swagger.json#/components/parameters/tokeAuthorization"
+                }],
+                "servers": [
+                    {
+                        "url": "http://localhost:3000" 
+                    }
+                ]
+                    
+
+            }
         }
+
     },
     "components" : {
-        "schema" : {
+        "schemas" : {
             "singin" : {
                 "name" : {
                     "type" : "string",

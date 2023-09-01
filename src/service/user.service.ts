@@ -1,4 +1,4 @@
-import { MAIL_SUBJECT } from "../constant/constant";
+import { MAIL_SUBJECT } from "../constant/constants";
 import { userEntity } from "../entity/user.entity";
 import {
   ExceptionMessage,
@@ -15,8 +15,9 @@ import { redis } from "../provider/redis/redis";
 import { CustomException } from "../utils/exception.utils";
 import { utils } from "../utils/utils";
 import { userSessionE } from "../entity/session.entity";
-import {sign} from 'jsonwebtoken'
-
+import { sign } from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { error } from "console";
 
 class UserService {
   constructor() {}
@@ -33,7 +34,11 @@ class UserService {
         console.log(token);
         const subject = MAIL_SUBJECT.VERIFICATION_OTP;
         await nodeMailer.sendMail(payload.email, token, subject, payload.name);
-        redis.setKeyWithExpiry(`${token}`, `${payload.email}`, RedisExpirydata.USER_SINGIN_REDIS);
+        redis.setKeyWithExpiry(
+          `${token}`,
+          `${payload.email}`,
+          RedisExpirydata.USER_SINGIN_REDIS
+        );
         let payloadData = JSON.stringify(payload);
         redis.setKeyWithExpiry(
           `${payload.email}+${token}`,
@@ -42,6 +47,7 @@ class UserService {
         );
         return SuccessMessage.USER_REGISTRATION_MAIL;
       }
+
       if (data.email) {
         throw new CustomException(
           ExceptionMessage.EMAIL_ALREADY_EXIST,
@@ -53,6 +59,7 @@ class UserService {
           HttpStatusMessage.FORBIDDEN
         );
       }
+      // console.log('exitingCode ---- herere')
     } catch (error) {
       throw error;
     }
@@ -67,12 +74,13 @@ class UserService {
         );
       }
       let data = "" + (await redis.getKey(`${email}+${payload.otp}`));
+      console.log(data)
       let finalData = JSON.parse(data);
       await userEntity.insertMany(finalData, {}).catch(() => {
         throw new CustomException(
           ExceptionMessage.SOMETHING_WENT_WRONG,
           HttpStatusMessage.INTERNAL_SERVER_ERROR
-        );
+        ).getError();
       });
       return SuccessMessage.USER_REGISTRATION;
     } catch (error) {
@@ -84,45 +92,71 @@ class UserService {
       let data = await userEntity.findOne(
         {
           username: payload.body.username,
-          password: payload.body.password,
         },
-        { _id: 1 },
+        { _id: 1, password: 1 },
         {}
       );
+      const DecryptPass = await bcrypt.compare(
+        payload.body.password,
+        data.password
+      );
+      console.log(DecryptPass, 'Password match ?')
       if (data) {
-        let redisSession = await redis.getKey(data._id)
-        if(!redisSession){
-            let dataSession=await userSessionE.findOne({
-                userId:data._id,
-                isActive:true,
-                deviceId:payload.headers.deviceId
-            },{})
-            if(dataSession)
-            {if(dataSession.deviceId !== payload.headers.deviceId){
-               await userSessionE.saveData({
-                userId : data._id,
-                isActive : true,
-                deviceId : payload.headers.deviceId
-               })
-            }
-                redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,RedisExpirydata.USER_SINGIN_REDIS)
-            }else{
+        if (DecryptPass) {
+          console.log('here ----------')
+          let redisSession = await redis.getKey(data._id);
+          if (!redisSession) {
+            let dataSession = await userSessionE.findOne(
+              {
+                userId: data._id,
+                isActive: true,
+                deviceId: payload.headers.deviceId,
+              },
+              {}
+            );
+            if (dataSession) {
+              if (dataSession.deviceId !== payload.headers.deviceId) {
+                await userSessionE.saveData({
+                  userId: data._id,
+                  isActive: true,
+                  deviceId: payload.headers.deviceId,
+                });
+              }
+              redis.setKeyWithExpiry(
+                `${data._id}`,
+                `${data.deviceId}`,
+                RedisExpirydata.USER_SINGIN_REDIS
+              );
+            } else {
               await userSessionE.saveData({
-                userId : data._id,
-                isActive : true,
-                deviceId : payload.headers.deviceId
-              })
-              redis.setKeyWithExpiry(`${data._id}`,`${data.deviceId}`,RedisExpirydata.USER_SINGIN_REDIS)
+                userId: data._id,
+                isActive: true,
+                deviceId: payload.headers.deviceId,
+              });
+              redis.setKeyWithExpiry(
+                `${data._id}`,
+                `${data.deviceId}`,
+                RedisExpirydata.USER_SINGIN_REDIS
+              );
             }
             await userSessionE.updateMany(
-              { userId: data?._id, deviceId: { $ne: payload.headers.deviceId } },
+              {
+                userId: data?._id,
+                deviceId: { $ne: payload.headers.deviceId },
+              },
               { isActive: false },
               { userId: 1, isActive: 1, deviceId: 1 }
-          );
-            const token = sign({ _id: data?._id }, `${process.env.SECRET_KEY}`, {
-            expiresIn: '1h',
-        });
-        return token
+            );
+            const token = sign(
+              { _id: data?._id },
+              `${process.env.SECRET_KEY}`,
+              {
+                expiresIn: "1h",
+              }
+            );
+            console.log(token)
+            return token;
+          }
         }
       } else {
         throw new CustomException(
@@ -134,9 +168,15 @@ class UserService {
       throw error;
     }
   };
-  async findAddress (userId: string, addressId: string) {
-    const address = await userEntity.findOne({_id:userId,'address._id':addressId},{})
-    return address;
-}
+  async findAddress(userId: string, addressId: string) {
+    try {
+      return await userEntity.findOne(
+        { _id: userId, "address._id": addressId },
+        {}
+      );
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 export const userService = new UserService();

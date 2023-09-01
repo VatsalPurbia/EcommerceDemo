@@ -11,10 +11,10 @@ class productRouter{
         this.router = Router()
     }
     productRouter(){
-        this.router.post('/add-cart', ProductControllerV1.addCart)
+        this.router.post('/add-cart',sessionCheckv1.tokenVerification, ProductControllerV1.addCart)
         this.router.post('/remove-cart', ProductControllerV1.removeFromCart)
         this.router.get('/get-cart' , ProductControllerV1.viewMyCart)
-        this.router.post('/place-order',ProductControllerV1.placeOrder)
+        this.router.post('/place-order',sessionCheckv1.tokenVerification,ProductControllerV1.placeOrder)
         this.router.post('/cancel-order',ProductControllerV1.cancelOrder)
         this.router.get('get-order',ProductControllerV1.viewMyOrder)
         this.router.post('/addProduct' ,adminSessionCheck.tokenVerification, ProductControllerV1.AddProduct)

@@ -7,7 +7,7 @@ import { AdminsessionModel } from "../model/admin.session.schema";
 import { utils } from "../utils/utils";
 import { OTP, RedisExpirydata } from "../interface/enum";
 import { nodeMailer } from "../provider/nodemailer/nodenmailer";
-import { MAIL_SUBJECT } from "../constant/constant";
+import { MAIL_SUBJECT } from "../constant/constants";
 import { error } from "console";
 import { adminE } from "./admin.entity";
 // TODO dotenv should have a proper file for where it is called 

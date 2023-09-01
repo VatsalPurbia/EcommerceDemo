@@ -56,7 +56,7 @@
         }
     },
     "components" : {
-        "schema" : {
+        "schemas" : {
             "login" :{
                 "email" :{
                     "type" : "string",

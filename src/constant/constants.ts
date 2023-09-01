@@ -7,11 +7,11 @@ export const productContext = '/product'
 export const swaggerContext = '/swagger/api-doc'
 
 
-export const NODEMAILER_CONFIG = {
-    service: nodemailerConfig.SERVICE,
+export const  NODEMAILER_CONFIG = {
+    service: 'gmail',
     auth: {
-        user: nodemailerConfig.USER,
-        pass: nodemailerConfig.PASS,
+        user: 'vatsal.purbia@appinventiv.com',
+        pass: 'izgtyzckbacnmgkb',
     },
 };
 export enum MAIL_SUBJECT {

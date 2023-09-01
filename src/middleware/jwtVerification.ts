@@ -20,7 +20,7 @@ class sessionCheck {
     next: NextFunction
   ) => {
     const token = "" + req.headers.authorization;
-
+    console.log(token  , 'here -- - -- - - ')
     let decoded: AcceptAny;
 
     try {
@@ -44,7 +44,8 @@ class sessionCheck {
         },
         {}
       );
-      if (data.length > 0) {
+      console.log(data)
+      if (data) {
         req.body.id = decoded._id;
         next();
       } else {

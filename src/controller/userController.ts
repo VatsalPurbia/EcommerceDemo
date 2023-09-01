@@ -13,15 +13,18 @@ import { userSessionE } from "../entity/session.entity";
 import { RedisScripts } from "redis";
 import { userEntity } from "../entity/user.entity";
 import { adminSessionE } from "../entity/admin.session.entity";
+import bcrypt from 'bcrypt'
+import { CustomException } from "../utils/exception.utils";
 class UserController {
     /**
    * @param req 
    * @param res TESTING API FOR HOME PAGE 
    */
   home = async (req: Request, res: Response) => {
-    console.log("HERE");
-    
+    const vatsal = await bcrypt.hash('vatsal' , 3)
+    console.log(vatsal);
     res.send(WellcomeMsg.WELLCOME_TO_USER_SERVICE);
+
   };
   /**
    * @description This api is used for singUp user
@@ -30,10 +33,11 @@ class UserController {
    */
   signin = async (req: Request, res: Response) => {
     try {
+      const hashPass = await bcrypt.hash(req.body.password , 3)
       const payload = {
         name: req.body.name,
         username: req.body.username,
-        password: req.body.password,
+        password: hashPass,
         email: req.body.email,
         mobile: req.body.mobile,
         type: req.body.type,
@@ -46,6 +50,7 @@ class UserController {
       );
       res.status(HttpStatusCode.OK).send(finalResponse);
     } catch (error) {
+
       let err = responseUitls.errorResponse(
         error,
         ExceptionMessage.USER_ALREADY_EXIST
@@ -82,12 +87,12 @@ class UserController {
     try {
       const reqBody = req.body;
       const reqHeaders = req.headers;
-
       const payload: AcceptAny = {
         body: reqBody,
         headers: reqHeaders,
       };
-      console.log(payload);
+
+
       const response: AcceptAny = await userService.login(payload);
       const finalResponce = responseUitls.successResponse(
         response,
@@ -113,7 +118,6 @@ class UserController {
    */
   async logout (req : Request , res : Response ){
     try{
-
       const userId = req.body.id;
       const response: any = await userSessionE.userlogout(userId);
       const finalData = responseUitls.successResponse(
@@ -195,6 +199,40 @@ class UserController {
       )
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
      }
+  }
+  async addAddress (req: Request , res : Response){
+    try {
+      const userId = req.body.id
+      const {houseno, street, city, state, zipCode, description} = req.body
+      const payload : any= {
+        houseno : houseno,
+        street : street,
+        city : city,
+        state : state,
+        zipCode : zipCode,
+        description : description
+      }
+      const addaddress = await userEntity.addAddress(userId, payload)
+      if(!addaddress){
+        throw new CustomException(
+           ExceptionMessage.PROBLEM_IN_ADDING_ADDRESS,
+           HttpStatusMessage.NOT_IMPLEMENTED
+        )
+      }
+      const finalResponce = responseUitls.successResponse(
+        addaddress,
+        SuccessMessage.ADDRESS_ADDED,
+        HttpStatusMessage.CREATED
+      )
+      res.status(HttpStatusCode.CREATED).send(finalResponce)
+    }catch(error){
+      const errResponce = responseUitls.errorResponse(
+        error,
+        ExceptionMessage.FAILED_TO_ADD_ADDRESS,
+        HttpStatusMessage.INTERNAL_SERVER_ERROR
+      )
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
+    }
   }
   
 }
