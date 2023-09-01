@@ -12,10 +12,10 @@ class productRouter{
     }
     productRouter(){
         this.router.post('/add-cart',sessionCheckv1.tokenVerification, ProductControllerV1.addCart)
-        this.router.post('/remove-cart', ProductControllerV1.removeFromCart)
-        this.router.get('/get-cart' , ProductControllerV1.viewMyCart)
+        this.router.post('/remove-cart',sessionCheckv1.tokenVerification, ProductControllerV1.removeFromCart)
+        this.router.get('/get-cart' , sessionCheckv1.tokenVerification,ProductControllerV1.viewMyCart)
         this.router.post('/place-order',sessionCheckv1.tokenVerification,ProductControllerV1.placeOrder)
-        this.router.post('/cancel-order',ProductControllerV1.cancelOrder)
+        this.router.post('/cancel-order',sessionCheckv1.tokenVerification,ProductControllerV1.cancelOrder)
         this.router.get('get-order',ProductControllerV1.viewMyOrder)
         this.router.post('/addProduct' ,adminSessionCheck.tokenVerification, ProductControllerV1.AddProduct)
         this.router.patch('/editProduct' ,adminSessionCheck.tokenVerification, ProductControllerV1.EditProduct)

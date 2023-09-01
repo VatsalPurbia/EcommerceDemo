@@ -15,6 +15,9 @@ class adminRouter {
         this.router.patch('/logout',adminSessionCheck.tokenVerification,adminControllerV1.logout)
         this.router.post('/forgot-password',adminControllerV1.forgetPassword)
         this.router.post('/reset-password',adminControllerV1.setNewPass)
+        this.router.get('/get-all-user',adminControllerV1.getAllUser )
+        this.router.post('/remove-user', adminControllerV1.removeUser)
+
         return this.router
     }
 }
