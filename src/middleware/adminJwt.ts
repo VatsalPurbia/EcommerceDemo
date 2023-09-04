@@ -14,7 +14,7 @@ import { responseUitls } from "../utils/response.util";
 import { adminSessionE } from "../entity/admin.session.entity";
 dotenv.config();
 
-class sessionCheck {
+class AdminsessionCheck {
   tokenVerification = async (
     req: Request,
     res: Response,
@@ -60,4 +60,4 @@ class sessionCheck {
   };
 }
 
-export const sessionCheckv1 = new sessionCheck();
+export const adminSessionCheck = new AdminsessionCheck();

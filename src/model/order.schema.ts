@@ -1,33 +1,52 @@
-// import mongoose, { NumberSchemaDefinition, Schema} from "mongoose"
-// import { mongo} from "../provider/mongo/mongo"
-// import { COLLECTION, USER_TYPE } from "../interface/enum"
-// import { OrderStatus } from "../interface/enum"
-// import { Product } from "mailgen";
+import mongoose, { Schema , Document , model} from "mongoose";
+import { mongo } from "../provider/mongo/mongo"
+import { COLLECTION } from "../interface/enum";
 
-// interface productSchema{
-//     productsId: { type: Schema.Types.ObjectId, required: true },
-//     quantity: { type: Number, required: true },
-//     PriceAtTimeOfOrder: { type: Number, required: true }
-// };
+// Cart schema
+export enum status {
+    notDeliverd = 'notDeliverdYet',
+    delivered ='delivered'
+}
+interface IOrder extends Document {
+  productId: Schema.Types.ObjectId;
+  unit_price: number;
+  quantity: number;
+  delivery_status: string;
+  address_id: string;
+}
+  
+const orderSchema = new Schema<IOrder>({
+    productId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+    },
+    unit_price: {
+        type: Number,
+        required: true,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+    },
+    delivery_status: {
+        type: String,
+        enum: Object.values(status),
+        default:"pending"
+    },
+    address_id: {
+        type: String,
+    },
+},{ timestamps: true });
 
-// interface IOrder extends Document {
-//     userId : Schema.Types.ObjectId,
-//     productsData : productSchema,
-//     OrderStatus : OrderStatus,
-//     OrderDate : Date,
-//     TotalOrderPrice : number,
-//     Address : {
-//         HouseNumber : number,
-//         Street : string,
-//         City : string,
-//         Locality : string,
-//         PinCode : number
-//     }
-// }
-
-// const orderModel = new Schema<IOrder>({
-//     userId : {type : Schema.Types.ObjectId , required : true},
-//     productsData :  
-
-//     }
-// })
+interface IOrderHistory extends Document {
+    userId: Schema.Types.ObjectId;
+    history: string;
+}
+const OrderHistorySchema = new Schema<IOrderHistory>({
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+    },
+    history: [orderSchema]
+},{ timestamps: true });
+export const orderModel = mongo.getConnection().model<IOrderHistory>(COLLECTION.ORDER,OrderHistorySchema)

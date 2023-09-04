@@ -1,4 +1,5 @@
 import mongoose, { ConnectOptions, Connection, createConnection } from 'mongoose';
+import { Mongo_connection } from '../../../dotenvConfig';
 class MongoConnection {
     private conn!: Connection;
     constructor() {
@@ -14,7 +15,7 @@ class MongoConnection {
         }
     }
     getConnectionUri() {
-        return 'mongodb://localhost:27017';
+        return Mongo_connection;
     }
     private registerConnectionEvent() {
         this.conn.on('error', console.error.bind(console, 'MongoDB connection error:'));

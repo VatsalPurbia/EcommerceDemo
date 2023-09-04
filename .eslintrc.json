@@ -1,0 +1,17 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "prettier/prettier": ["error", {"singleQuote": true, "semi": true, "trailingComma": "es5", "printWidth": 100, "tabWidth": 4}],
+        "@typescript-eslint/interface-name-prefix" :"off",
+        "@typescript-eslint/explicit-function-return-type" : "off",
+        "@typescript-eslint/explicit-module-boundary-types" : "off"
+    }
+}

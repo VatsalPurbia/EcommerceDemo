@@ -15,27 +15,30 @@ import { productE } from "../entity/product.entity";
 import { title } from "process";
 import { productModel } from "../model/product.schema";
 class ProductService {
-  AddProduct = async (payload: AcceptAny) => {
+  AddProduct = async (payload: AcceptAny , adminId : string) => {
     
     try {
-      const { title, price, description, imageUrl, userID } = payload;
+      const { title, price, quantity, description, imageUrl } = payload;
+
       await productE.saveData({
         title: title,
         price: price,
+        quantity : quantity,
         description: description,
         imageUrl: imageUrl,
-        userId: userID,
+        adminId: adminId,
       });
+      console.log(payload)
     } catch (error) {
       throw error;
     }
   };
-  EditProducts = async (payload: AcceptAny) => {
+  EditProducts = async (payload: AcceptAny , adminId : string) => {
     try {
       const { title, price, description, imageUrl } = payload.body;
       const { productId } = payload.query;
       const ExsistingProduct = productE.findOne(
-        { _id: productId },
+        { _id: productId , adminId : adminId },
         {
           title: 1,
           price: 1,
@@ -112,16 +115,8 @@ class ProductService {
       throw error;
     }
   };
-  addCart =async (payload : AcceptAny) => {
-      const {productId} = payload  
-      if(!productId){
-        throw new CustomException(
-          ExceptionMessage.PRODUCT_NOT_EXSITS,
-          HttpStatusMessage.NOT_FOUND
-        )
-      }  
-      const productData = await productE.findOne({_id : productId},{})
-  }
+  
+ 
   
 }
 

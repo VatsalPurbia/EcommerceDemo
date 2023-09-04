@@ -1,28 +1,35 @@
-import mongoose, { NumberSchemaDefinition, Schema} from "mongoose"
-import { mongo} from "../provider/mongo/mongo"
-import { COLLECTION, USER_TYPE } from "../interface/enum"
+import mongoose, { NumberSchemaDefinition, Schema } from "mongoose";
+import { mongo } from "../provider/mongo/mongo";
+import { COLLECTION, ChatStatus, USER_TYPE } from "../interface/enum";
 
 interface IChat extends Document {
-    praticipentId : Schema.Types.ObjectId,
-    productDetails : {
-        productId : Schema.Types.ObjectId,
-        messages : string
-        senderId : Schema.Types.ObjectId,
-        messsageContent : string,    
-    }
+  topic: string;
+  replyToMessageId : Schema.Types.ObjectId
+  reciverId :Schema.Types.ObjectId
+  reviewId: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  name: string;
+  message: string;
+  status : ChatStatus;
 }
 
-const ChatSchema = new Schema<IChat>({
-    praticipentId : {type : Schema.Types.ObjectId , required : true},
-    productDetails :{
-        productId : Schema.Types.ObjectId,
-        message : String,
-        senderId : Schema.Types.ObjectId,
-        messsageContent : String
-    },
-},
-{
-    timestamps : true
-})
+const ChatSchema = new Schema<IChat>(
+  {
+    topic: String,
+    replyToMessageId : {type : Schema.Types.ObjectId},
+    reciverId : {type : Schema.Types.ObjectId },
+    reviewId: { type: Schema.Types.ObjectId, required: true },
+    userId: { type: Schema.Types.ObjectId },
+    name: String,
+    message: String,
+    status : ChatStatus
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
 
-export const ChatModel = mongo.getConnection().model<IChat>(COLLECTION.CHAT,ChatSchema)
+export const ChatModel = mongo
+  .getConnection()
+  .model<IChat>(COLLECTION.CHAT, ChatSchema);
