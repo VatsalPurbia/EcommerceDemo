@@ -19,11 +19,11 @@ import { redis } from "../provider/redis/redis";
 import { MAIL_SUBJECT } from "../constant/constants";
 import { error } from "console";
 import { adminLogin } from "../interface/gobal.interface";
-import { resolveScope } from "sequelize-typescript";
+
 
 class adminController {
   /**
-   *
+   *@description This API is used for testing that server is active or not
    * @param req
    * @param res TESTING API FOR HOME PAGE
    */

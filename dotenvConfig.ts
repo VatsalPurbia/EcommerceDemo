@@ -11,3 +11,4 @@ export const nodemailerConfig = {
 
 export const SECRETKEY = String(process.env.SECRET_KEY)
 
+export const Mongo_connection = String(process.env.MONGO_CONNECTION)

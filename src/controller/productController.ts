@@ -19,6 +19,8 @@ import { status } from "../model/order.schema";
 
 /**
  * @description This API is used for adding product in db
+ * @param req All the data req for product
+ * @param res 
  */
 class productController {
   AddProduct = async (req: Request, res: Response) => {
@@ -44,6 +46,8 @@ class productController {
 
   /**
    * @description This API is used for editing product
+   * @param req - All the data thats we want to chanage for the product 
+   * @param res - Product Edited Successfully 
    */
 
   EditProduct = async (req: Request, res: Response) => {
@@ -72,6 +76,8 @@ class productController {
 
   /**
    * @description This API is used for deleting product in db
+   * @param req 
+   * @param res product deleted successfully 
    */
 
   DelteProduct = async (req: Request, res: Response) => {
@@ -95,6 +101,7 @@ class productController {
 
   /**
    * @description This API is used for Geting info about product
+   * @param res All the product in the db
    */
 
   getProduct = async (req: Request, res: Response) => {
@@ -118,6 +125,8 @@ class productController {
 
   /**
    * @description This API is used for adding product to cart
+   * @param req productId of the selected product 
+   * @param res product added to the cart
    */
 
   addCart = async (req: Request, res: Response) => {
@@ -170,6 +179,8 @@ class productController {
   
   /**
    * @description This API is used removing product from cart
+   * @param req productiId of the product you wanna remove
+   * @param res product Removed 
    */
 
   async removeFromCart(req: Request, res: Response) {
@@ -212,6 +223,7 @@ class productController {
 
   /**
    * @description This API is used for view users cart
+   * @param res  all the product data inside the cart 
    */
 
   async viewMyCart(req: Request, res: Response) {
@@ -243,6 +255,8 @@ class productController {
 
   /**
    * @description This API is used for placing order
+   * @param req AddressId of the user who's placing the order 
+   * @param res Order placed 
    */
 
   async placeOrder(req: Request, res: Response) {
@@ -291,6 +305,8 @@ class productController {
 
   /**
    * @description This API is used for adding canceling order
+   * @param req orderId of the orderplaced 
+   * @param res Order Canceled
    */
 
   async cancelOrder(req: Request, res: Response) {
@@ -335,6 +351,8 @@ class productController {
 
   /**
    * @description This API is used for viewing your order history
+   * @param req - 
+   * @param res Orders Placed by the user 
    */
 
   async viewMyOrder(req: Request, res: Response) {
@@ -359,10 +377,16 @@ class productController {
         .send(errorResponse);
     }
   }
+   /**
+   * @description This API is used for adding review
+   * @param req orderId , rating and comment is passed in the payload 
+   * @param res Added reveiw 
+   */
   async Addreview(req:any, res:any) {
     try {
         const userId= req.body.id;
         const {order_id, rating, comment } = req.body;
+        console.log(req.Body , "Payload Content")
         const orderExist = await orderE.findOrderInfo(order_id,userId)
         if(!orderExist){
           const err = responseUitls.errorResponse(

@@ -3,12 +3,15 @@ import express, { Request, Response } from "express";
 import { userEntity } from "../entity/user.entity";
 import { CustomException } from "../utils/exception.utils";
 import {
+  ChatStatus,
   ExceptionMessage,
   HttpStatusCode,
   HttpStatusMessage,
   SuccessMessage,
 } from "../interface/enum";
 import { responseUitls } from "../utils/response.util";
+import { ChatModel } from "../model/chat.schema";
+import { personalCartE } from "../entity/cart.entity";
 import { productE } from "../entity/product.entity";
 
 const messageArray: string[] = [];
@@ -18,16 +21,28 @@ client.on("connect", () => {
   console.log("Connected to MQTT broker");
 });
 
-client.on("message", (topic, obejct) => {
-  const chatMessage = obejct.toString();
+client.on("message", (topic, message) => {
+  const chatMessage = Object.toString();
   console.log(`Received message from topic ${topic}: ${chatMessage}`);
-  messageArray.push(chatMessage);
+  const jsonstring = message.toString();
+  const recivedData = JSON.parse(jsonstring);
+  console.log(recivedData, "Here the data recived from publish");
+  ChatModel.create({
+    replyToMessageId : recivedData.replyToMessageId,
+    topic: topic,
+    reciverId : recivedData.reciverId,
+    userId: recivedData.userId,
+    reviewId: recivedData.reviewId,
+    name: recivedData.name,
+    message: recivedData.message,
+  });
+  messageArray.push(jsonstring);
 });
 
 export async function subscribeToReviewerChatMessages(
   req: Request,
   res: Response
-): Promise<void> {
+) {
   const { reviewId } = req.params;
 
   client.subscribe(`chat/reviewer/${reviewId}`, (error) => {
@@ -37,44 +52,34 @@ export async function subscribeToReviewerChatMessages(
         error,
         ExceptionMessage.ISSUE_IN_SUBSCRIBING,
         HttpStatusMessage.INTERNAL_SERVER_ERROR
-      )
+      );
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errorResponce);
     } else {
       console.log(`Subscribed to topic chat/reviewer/${reviewId}`);
-      const finalResponce = responseUitls.successResponse(
-        req,
-        SuccessMessage.SUBSCRIBED_SUCCESSFULLY,
-        HttpStatusMessage.OK
-
-      )
-      res.status(HttpStatusCode.OK).send(finalResponce);
+      res.status(HttpStatusCode.OK).send("Subscribed");
     }
   });
 }
 
 export function getReviewerChatMessages(req: Request, res: Response): void {
-  try{
-    const finalResponce = responseUitls.successResponse(
-        messageArray,
-        SuccessMessage.ALL_MESSAGES,
-        HttpStatusMessage.CONTINUE
-    )
-    res.status(HttpStatusCode.CONTINUE).send(finalResponce);
-    }
-    catch(error){
-        console.log(error)
-        const err = responseUitls.errorResponse(
-            error,
-            ExceptionMessage.SOMETHING_WENT_WRONG,
-            HttpStatusMessage.INTERNAL_SERVER_ERROR
-        )
-        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err)
-    }
+  try {
+    // JSON.stringify(messageArray)
+    res.send(messageArray);
+  } catch (error) {
+    console.log(error);
+    const err = responseUitls.errorResponse(
+      error,
+      ExceptionMessage.SOMETHING_WENT_WRONG,
+      HttpStatusMessage.INTERNAL_SERVER_ERROR
+    );
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err);
+  }
 }
 
 export async function sendChatToReviewer(req: Request, res: Response) {
   try {
-    const { message, reviewId, userId } = req.body;
+    const userId = req.body.id;
+    const { message, reviewId, reciverId , replyToMessageId} = req.body;
     console.log(req.body);
     const response = await userEntity.findUser(userId);
     if (!response) {
@@ -83,26 +88,61 @@ export async function sendChatToReviewer(req: Request, res: Response) {
         HttpStatusMessage.NOT_FOUND
       ).getError();
     }
-    const obejct: any = {
+    const Object: any = {
+      replyToMessageId : replyToMessageId,
+      reciverId : reciverId,
+      reviewId: reviewId,
+      userId: userId,
       name: response.name,
       message: message,
+      status : ChatStatus.DELIVERED
     };
+    const jsonString = JSON.stringify(Object);
 
-    const data = client?.publish(`chat/reviewer/${reviewId}`, obejct);
-    const finalResponce = responseUitls.successResponse(
-      data,
-      SuccessMessage.MESSAGE_PUBLISHED,
-      HttpStatusMessage.CREATED
-    );
-    res.status(HttpStatusCode.CREATED).send(finalResponce);
+    client?.publish(`chat/reviewer/${reviewId}`, jsonString);
+    res.send("Chat sent");
   } catch (error) {
     console.log(error);
+  }
+}
+export async function getAllmsgs(req: Request, res: Response) {
+  try {
+    const { reviewId } = req.params;
+    const { page, pageSize } = req.query;
+    console.log(`here the reviewId ${reviewId}`);
+
+    const pageNumber: number = parseInt(page as string, 10) || 1;
+    const itemsPerPage: number = parseInt(pageSize as string, 10) || 10;
+    const skip: number = (pageNumber - 1) * itemsPerPage;
+
+    const sortedData = await ChatModel.aggregate([
+      { $match: { topic: `chat/reviewer/${reviewId}` } },
+      { $sort: { createdAt: 1 } },
+      { $project: { name: 1, message: 1, _id: 0, status :1 } },
+      { $skip: skip },
+      { $limit: itemsPerPage },
+    ]);
+    await ChatModel.updateMany(
+      { topic: `chat/reviewer/${reviewId}`, status: ChatStatus.DELIVERED },
+      { $set: { status: ChatStatus.SEEN } }
+    );
+
+    const finalRes = responseUitls.successResponse(
+      sortedData,
+      SuccessMessage.ALL_CHAT_DATA_FOUND,
+      HttpStatusMessage.ACCEPTED
+    );
+    res.status(HttpStatusCode.ACCEPTED).send(finalRes);
+  } catch (error) {
+    console.log(error);
+    res.send(error);
   }
 }
 
 export async function sendChatToUser(req: Request, res: Response) {
   try {
-    const { message, reviewId, userId, productId } = req.body;
+    const userId = req.body.id;
+    const { message, reviewId, productId } = req.body;
     const response = await userEntity.findUser(userId);
     if (!response) {
       throw new CustomException(
@@ -117,18 +157,14 @@ export async function sendChatToUser(req: Request, res: Response) {
         HttpStatusMessage.NOT_FOUND
       ).getError();
     }
-    const obejct: any = {
+    const Object: any = {
+      reviewId: reviewId,
+      userId: userId,
       name: response.name,
       message: message,
     };
-    // Publish the chat message to the website's topic
-    const data = client?.publish(`chat/reviewer/${reviewId}`, obejct);
-    const finalResponce = responseUitls.successResponse(
-      data,
-      SuccessMessage.MESSAGE_PUBLISHED,
-      HttpStatusMessage.CREATED
-    );
-    res.status(HttpStatusCode.CREATED).send(finalResponce);
+    client?.publish(`chat/reviewer/${reviewId}`, Object);
+    res.status(HttpStatusCode.CREATED).send("Chat sent By reviewer Side");
   } catch (error) {
     console.log(error);
     const errorResponse = responseUitls.errorResponse(

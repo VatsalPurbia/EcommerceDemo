@@ -1,6 +1,6 @@
 import { Router} from "express"
 import { ProductControllerV1 } from "../controller/productController"
-import { getReviewerChatMessages, sendChatToReviewer, sendChatToUser , subscribeToReviewerChatMessages  } from "../amqp/mqttChat";
+import { getAllmsgs, getReviewerChatMessages, sendChatToReviewer, sendChatToUser , subscribeToReviewerChatMessages  } from "../amqp/mqttChat";
 import { adminSessionCheck } from "../middleware/adminJwt";
 import { sessionCheckv1 } from "../middleware/jwtVerification";
 // import { mqttController } from "../controller/mqtt.controller";
@@ -24,7 +24,8 @@ class productRouter{
         this.router.post('/chat/reviewer',sessionCheckv1.tokenVerification , sendChatToReviewer)
         this.router.post('/add-review',sessionCheckv1.tokenVerification,  ProductControllerV1.Addreview)
         this.router.post('/chat/user/reply',sessionCheckv1.tokenVerification , sendChatToUser) 
-        this.router.post('/subReview/:reviewerId',sessionCheckv1.tokenVerification, subscribeToReviewerChatMessages )
+        this.router.post('/subReview/:reviewId', subscribeToReviewerChatMessages ),
+        this.router.get('/all-msgs/:reviewId' , getAllmsgs)
         this.router.get('/getmsg' , getReviewerChatMessages)
         return this.router
     }

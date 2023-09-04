@@ -200,6 +200,12 @@ class UserController {
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errResponce)
      }
   }
+   /**
+   * @description This api is used by the user to add Address
+   * @param req  Address data like houseno, city , state , zipcode and additional info
+   * @param res  New address created
+   */
+  
   async addAddress (req: Request , res : Response){
     try {
       const userId = req.body.id

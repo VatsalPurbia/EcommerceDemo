@@ -8,11 +8,9 @@ import { serve, setup } from "swagger-ui-express";
 import swaggerDocument from "./swagger/parse-swagger.json";
 import { utils } from "./src/utils/utils";
 import { productRouterV1 } from "./src/routers/porduct.routes";
-import { socketStart } from "./src/socketio/socket";
 import cors from "cors";
 import { sessionCheckv1 } from "./src/middleware/jwtVerification";
-// import { mqttController } from "./src/controller/mqtt.controller";
-// TODO Add eslint to code , Add comments for function
+
 class App {
   private app!: Express;
   private port!: number;
@@ -32,7 +30,6 @@ class App {
     // this.connectToBroker()
     // mqttController.subscribeToReviewerChatMessages();
     // mqttController.subscribeToUserChatMessages;
-    socketStart();
     this.initServer();    // this.connectToRabbitMQ()
 
   }
@@ -43,10 +40,6 @@ loadGlobalMiddleWare() {
     this.productContext = productContext
     this.app.use(express.json());
     this.port = portNumber;
-    const corsOptions = {
-      origin: '*', // Allow requests from this origin
-    };
-    this.app.use(cors(corsOptions))
 
   }
   loadRouter() {
@@ -62,15 +55,7 @@ loadGlobalMiddleWare() {
   private callback = () => {
     console.log(`Server listing on port: ${this.port}`);
   };
-  // private async connectToRabbitMQ() {
-  //   try {
-  //     rabbitConnection = await connect('amqp://localhost');
-  //     startReviewListener()
-  //     console.log('Connected to RabbitMQ');
-  //   } catch (error) {
-  //     console.error('Error connecting to RabbitMQ:', error);
-  //   }
-  // }
+
  
  
 }
@@ -80,3 +65,4 @@ loadGlobalMiddleWare() {
   // startReviewListener();
   new App();
 })();
+``

@@ -186,7 +186,8 @@ export enum SuccessMessage {
     SUBSCRIBED_SUCCESSFULLY = 'SUBSCRIBED_SUCCESSFULLY',
     ALL_MESSAGES = 'ALL_MESSAGES',
     SUCCESSFULLY_LOGEDOUT = 'SUCCESSFULLY_LOGEDOUT',
-    ADDRESS_ADDED  = 'ADDRESS_ADDED'           
+    ADDRESS_ADDED  = 'ADDRESS_ADDED',
+    ALL_CHAT_DATA_FOUND ='ALL_CHAT_DATA_FOUND'          
 }
 
 export enum OrderStatus {
@@ -206,4 +207,9 @@ export enum RedisExpirydata{
 export enum OTP {
     USER_OTP = 6,
     ADMIN_OTP = 4,
+}
+
+export enum ChatStatus {
+    DELIVERED = 'DELIVERED',
+    SEEN = 'SEEN'
 }

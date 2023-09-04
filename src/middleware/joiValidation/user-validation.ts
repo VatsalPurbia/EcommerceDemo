@@ -40,5 +40,25 @@ export const JOI_VALIDATION = {
         }
         
     },
+    ADMIN : {
+        LOGIN :{
+            email : Joi.string().min(2).max(30).required(),
+            password : Joi.string().min(3).max(30).required()
+        },
+        OTP_VERIFY : {
+            email :  Joi.string().min(2).max(30).required(),
+            otp : Joi.string().max(4).required()
+        },
+        FORGOT_PASSWORD :{
+            email :  Joi.string().min(2).max(30).required()
+        },
+        SET_NEW_PASSWORD :{
+            email :  Joi.string().min(2).max(30).required(),
+            otp : Joi.string().max(4).required(),
+            newPassword : Joi.string().min(8).max(30)
+        }
+
+        
+    }
    
 };

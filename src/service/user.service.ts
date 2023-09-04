@@ -105,6 +105,7 @@ class UserService {
         if (DecryptPass) {
           console.log('here ----------')
           let redisSession = await redis.getKey(data._id);
+          console.log(redisSession)
           if (!redisSession) {
             let dataSession = await userSessionE.findOne(
               {
@@ -147,6 +148,7 @@ class UserService {
               { isActive: false },
               { userId: 1, isActive: 1, deviceId: 1 }
             );
+            console.log('we here at token genration -- -- -  ')
             const token = sign(
               { _id: data?._id },
               `${process.env.SECRET_KEY}`,
