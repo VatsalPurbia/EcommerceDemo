@@ -11,6 +11,7 @@ import { AcceptAny } from "../interface/type";
 import { userSessionE } from "../entity/session.entity";
 import { CustomException } from "../utils/exception.utils";
 import { responseUitls } from "../utils/response.util";
+import { error } from "console";
 dotenv.config();
 
 class sessionCheck {
@@ -20,23 +21,20 @@ class sessionCheck {
     next: NextFunction
   ) => {
     const token = "" + req.headers.authorization;
-    console.log(token  , 'here -- - -- - - ')
+    if(!token){
+      throw error
+    }
     let decoded: AcceptAny;
 
     try {
-      decoded = jwt.verify(token, `${process.env.SECRET_KEY}`);
-    } catch (error) {
-      res
-        .status(HttpStatusCode.UNAUTHORIZED)
-        .send(
-          responseUitls.errorResponse(
-            error,
-            ExceptionMessage.TOKEN_NOT_FOUND,
-            HttpStatusMessage.AMBIGUOUS
-          )
-        );
-    }
-    try {
+      decoded = jwt.verify(token, `${process.env.SECRET_KEY}`)
+      if(!decoded){
+        const errorResponce = responseUitls.errorResponse(
+          error,
+          ExceptionMessage.TOKENIZATION_ERROR,
+          HttpStatusMessage.AMBIGUOUS
+        )
+      }
       let data = await userSessionE.findOne(
         {
           userId: decoded._id,
@@ -44,7 +42,6 @@ class sessionCheck {
         },
         {}
       );
-      console.log(data)
       if (data) {
         req.body.id = decoded._id;
         next();
@@ -55,7 +52,12 @@ class sessionCheck {
         );
       }
     } catch (error) {
-      throw error;
+          const err = responseUitls.errorResponse(
+            error,
+            ExceptionMessage.TOKEN_NOT_FOUND,
+            HttpStatusMessage.INTERNAL_SERVER_ERROR
+          )
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err)
     }
   };
 }
