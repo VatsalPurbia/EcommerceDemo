@@ -12,7 +12,6 @@ import {
 } from "../interface/enum";
 import { responseUitls } from "../utils/response.util";
 import { ChatModel } from "../model/chat.schema";
-import { personalCartE } from "../entity/cart.entity";
 import { productE } from "../entity/product.entity";
 
 const messageArray: string[] = [];
@@ -23,7 +22,6 @@ client.on("connect", () => {
 });
 
 client.on("message", (topic, message) => {
-  // const chatMessage = Object.toString();
   const jsonstring = message.toString();
   const recivedData = JSON.parse(jsonstring);
   console.log(`Received message from topic ${topic}: ${jsonstring}`);
@@ -45,7 +43,7 @@ export async function subscribeToReviewerChatMessages(
     ).getError();
   }
 
-  client.subscribe(`chat/reviewer/${reviewId}`,{qos : 2 },(error) => {
+  client.subscribe(`chat/reviewer/${reviewId}`, {qos : 2}, (error) => {
     
     if (error) {
       console.error(`Error subscribing to topic: ${error}`);
@@ -95,7 +93,7 @@ export async function sendChatToReviewer(req: Request, res: Response) {
       reciverId: reciverId,
       name: response.name,
       message: message,
-      status: ChatStatus.DELIVERED,
+      // status: ChatStatus.DELIVERED,
     };
     ChatModel.create({
       replyToMessageId: replyToMessageId,
@@ -111,7 +109,7 @@ export async function sendChatToReviewer(req: Request, res: Response) {
     const jsonString = JSON.stringify(Object);
 
     client?.publish(`chat/reviewer/${reviewId}`, jsonString, {
-      qos: 2,
+      qos : 2,
       retain: true,
     });
     res.send("Chat sent");
@@ -247,7 +245,16 @@ export async function addReactionToMessage(req: Request, res: Response) {
     message.reaction = reaction;
     message.reactionAddById = userId;
     await message.save();
-    const jsonString = JSON.stringify(message);
+    const obejct = {
+      replyToMessageId: message.replyToMessageId,
+      reciverId: message.reciverId,
+      name: message.name,
+      message: message.message,
+      reaction : message.reaction,
+      reactedBy : response.name,
+      reactionAddById : message.reactionAddById
+    }
+    const jsonString = JSON.stringify(obejct);
 
     client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
       qos: 2,
@@ -278,7 +285,7 @@ export async function editChatMessage(req: Request, res: Response) {
       ).getError();
     }
 
-    if (existingMessage.userId !== userId) {
+    if (existingMessage.userId != userId) {
       throw new CustomException(
         ExceptionMessage.UNAUTHORIZED,
         HttpStatusMessage.UNAUTHORIZED
@@ -333,7 +340,7 @@ export async function DeleteChat(req: Request, res: Response) {
     };
 
     const jsonString = JSON.stringify(deletionNotification);
-    client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
+      client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
       qos: 2,
       retain: true,
     });
@@ -344,13 +351,19 @@ export async function DeleteChat(req: Request, res: Response) {
   }
 }
 
-export function unsubscribeFromTopic(req: Request, res: Response) {
+export async function unsubscribeFromTopic(req: Request, res: Response) {
   try {
     const userId = req.body.id;
-    const { topic } = req.body;
-
+    const { reviewId } = req.params;
+    const Data = await userEntity.findUser(userId)
+    if(!Data){
+      throw new CustomException(
+        ExceptionMessage.USER_NOT_FOUND,
+        HttpStatusMessage.NOT_FOUND
+      ).getError();
+    }
     // Unsubscribe from the specified topic
-    client.unsubscribe(topic, (error) => {
+    client.unsubscribe(`chat/reviewer/${reviewId}`, (error) => {
       if (error) {
         console.error(`Error unsubscribing from topic: ${error}`);
         const errorResponse = responseUitls.errorResponse(
@@ -360,7 +373,7 @@ export function unsubscribeFromTopic(req: Request, res: Response) {
         );
         res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errorResponse);
       } else {
-        console.log(`Unsubscribed from topic: ${topic}`);
+        console.log(`Unsubscribed from topic: chat/reviewer/${reviewId}`);
         res.status(HttpStatusCode.OK).send("Unsubscribed");
       }
     });
