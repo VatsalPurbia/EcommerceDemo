@@ -34,17 +34,16 @@ export async function subscribeToReviewerChatMessages(
   res: Response
 ) {
   const { reviewId } = req.params;
-  const userId = req.body.id
-  const userData = await userEntity.findUser(userId)
-  if(!userData){
+  const userId = req.body.id;
+  const userData = await userEntity.findUser(userId);
+  if (!userData) {
     throw new CustomException(
       ExceptionMessage.USER_NOT_FOUND,
       HttpStatusMessage.NOT_FOUND
     ).getError();
   }
 
-  client.subscribe(`chat/reviewer/${reviewId}`, {qos : 2}, (error) => {
-    
+  client.subscribe(`chat/reviewer/${reviewId}`, { qos: 2 }, (error) => {
     if (error) {
       console.error(`Error subscribing to topic: ${error}`);
       const errorResponce = responseUitls.errorResponse(
@@ -63,7 +62,7 @@ export async function subscribeToReviewerChatMessages(
 export function getReviewerChatMessages(req: Request, res: Response): void {
   try {
     // JSON.stringify(messageArray)
-    
+
     res.send(messageArray);
   } catch (error) {
     console.log(error);
@@ -103,13 +102,13 @@ export async function sendChatToReviewer(req: Request, res: Response) {
       reviewId: reviewId,
       name: response.name,
       message: message,
-      status : ChatStatus.DELIVERED
+      status: ChatStatus.DELIVERED,
     });
 
     const jsonString = JSON.stringify(Object);
 
     client?.publish(`chat/reviewer/${reviewId}`, jsonString, {
-      qos : 2,
+      qos: 2,
       retain: true,
     });
     res.send("Chat sent");
@@ -126,7 +125,7 @@ export async function getAllmsgs(req: Request, res: Response) {
     const pageNumber: number = parseInt(page as string, 10) || 1;
     const itemsPerPage: number = parseInt(pageSize as string, 10) || 10;
     const skip: number = (pageNumber - 1) * itemsPerPage;
-    
+
     await ChatModel.updateMany(
       { topic: `chat/reviewer/${reviewId}`, status: ChatStatus.DELIVERED },
       { $set: { status: ChatStatus.SEEN } }
@@ -154,7 +153,8 @@ export async function getAllmsgs(req: Request, res: Response) {
 export async function sendChatToUser(req: Request, res: Response) {
   try {
     const userId = req.body.id;
-    const { message, reviewId, productId,reciverId, replyToMessageId} = req.body;
+    const { message, reviewId, productId, reciverId, replyToMessageId } =
+      req.body;
     const response = await userEntity.findUser(userId);
     if (!response) {
       throw new CustomException(
@@ -170,8 +170,8 @@ export async function sendChatToUser(req: Request, res: Response) {
       ).getError();
     }
     const Object: any = {
-      reciverId : reciverId,
-      replyToMessageId : replyToMessageId,
+      reciverId: reciverId,
+      replyToMessageId: replyToMessageId,
       name: response.name,
       message: message,
     };
@@ -183,13 +183,13 @@ export async function sendChatToUser(req: Request, res: Response) {
       reviewId: reviewId,
       name: response.name,
       message: message,
-      status : ChatStatus.DELIVERED
+      status: ChatStatus.DELIVERED,
     });
 
-    client?.publish(`chat/reviewer/${reviewId}`, Object,{
+    client?.publish(`chat/reviewer/${reviewId}`, Object, {
       qos: 2,
       retain: true,
-    } );
+    });
     res.status(HttpStatusCode.CREATED).send("Chat sent By reviewer Side");
   } catch (error) {
     console.log(error);
@@ -250,10 +250,10 @@ export async function addReactionToMessage(req: Request, res: Response) {
       reciverId: message.reciverId,
       name: message.name,
       message: message.message,
-      reaction : message.reaction,
-      reactedBy : response.name,
-      reactionAddById : message.reactionAddById
-    }
+      reaction: message.reaction,
+      reactedBy: response.name,
+      reactionAddById: message.reactionAddById,
+    };
     const jsonString = JSON.stringify(obejct);
 
     client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
@@ -276,7 +276,10 @@ export async function editChatMessage(req: Request, res: Response) {
     const userId = req.body.id;
     const { messageId, updatedMessage } = req.body;
 
-    const existingMessage = await ChatModel.findById({ _id: messageId, userId : userId });
+    const existingMessage = await ChatModel.findById({
+      _id: messageId,
+      userId: userId,
+    });
 
     if (!existingMessage) {
       throw new CustomException(
@@ -320,7 +323,10 @@ export async function DeleteChat(req: Request, res: Response) {
         HttpStatusMessage.NOT_FOUND
       ).getError();
     }
-    const message = await ChatModel.findById({ _id: messageId , userId : userId});
+    const message = await ChatModel.findById({
+      _id: messageId,
+      userId: userId,
+    });
     if (!message) {
       throw new CustomException(
         ExceptionMessage.MESSAGE_NOT_FOUND,
@@ -329,18 +335,17 @@ export async function DeleteChat(req: Request, res: Response) {
     }
 
     message.message = "This message is deleted";
-    message.reaction = ChatReaction.DELETED
+    message.reaction = ChatReaction.DELETED;
     message.status = ChatStatus.DELETED;
     await message.save();
 
-
-      const deletionNotification = {
+    const deletionNotification = {
       messageId: messageId,
-      action: 'This msg is deleted', 
+      action: "This msg is deleted",
     };
 
     const jsonString = JSON.stringify(deletionNotification);
-      client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
+    client?.publish(`chat/reviewer/${message.reviewId}`, jsonString, {
       qos: 2,
       retain: true,
     });
@@ -355,8 +360,8 @@ export async function unsubscribeFromTopic(req: Request, res: Response) {
   try {
     const userId = req.body.id;
     const { reviewId } = req.params;
-    const Data = await userEntity.findUser(userId)
-    if(!Data){
+    const Data = await userEntity.findUser(userId);
+    if (!Data) {
       throw new CustomException(
         ExceptionMessage.USER_NOT_FOUND,
         HttpStatusMessage.NOT_FOUND
@@ -388,3 +393,39 @@ export async function unsubscribeFromTopic(req: Request, res: Response) {
   }
 }
 
+export async function findAddGroupMembers(req: Request, res: Response) {
+  try {
+    const { reviewId } = req.params;
+    // console.log(reviewId);
+    const Data = await ChatModel.aggregate([
+      { $match: { topic: `chat/reviewer/${reviewId}` } },
+      {
+        $group: {
+          _id: "$name",
+          uniqueNames: { $addToSet: "$name" },
+        },
+      },
+      { $sort: { name: 1 } },
+      {
+        $project: {
+          _id: 0,
+          name: "$uniqueNames",
+        },
+      },
+    ]);
+    const finalResponce = responseUitls.successResponse(
+      Data,
+      SuccessMessage.GROUP_MEMBERS_FOUND,
+      HttpStatusMessage.OK
+    );
+    res.status(HttpStatusCode.OK).send(finalResponce);
+  } catch (error) {
+    console.log(error);
+    const errorResponse = responseUitls.errorResponse(
+      error,
+      ExceptionMessage.SOMETHING_WENT_WRONG,
+      HttpStatusMessage.INTERNAL_SERVER_ERROR
+    );
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(errorResponse);
+  }
+}

@@ -1,6 +1,6 @@
 import { Router} from "express"
 import { ProductControllerV1 } from "../controller/productController"
-import { DeleteChat, addReactionToMessage, editChatMessage, getAllmsgs, getReviewerChatMessages, sendChatToReviewer, sendChatToUser , subscribeToReviewerChatMessages, unsubscribeFromTopic  } from "../mqtt/mqttChat";
+import { DeleteChat, addReactionToMessage, editChatMessage, findAddGroupMembers, getAllmsgs, getReviewerChatMessages, sendChatToReviewer, sendChatToUser , subscribeToReviewerChatMessages, unsubscribeFromTopic  } from "../mqtt/mqttChat";
 import { adminSessionCheck } from "../middleware/adminJwt";
 import { sessionCheckv1 } from "../middleware/jwtVerification";
 import { unsubscribe } from "diagnostics_channel";
@@ -29,9 +29,10 @@ class productRouter{
         this.router.get('/all-msgs/:reviewId' , getAllmsgs)
         this.router.get('/getmsg' , getReviewerChatMessages)
         this.router.post('/chat/reaction' ,sessionCheckv1.tokenVerification, addReactionToMessage) 
-        this.router.patch('/chat/edit', sessionCheckv1.tokenVerification , editChatMessage)
+        this.router.put('/chat/edit', sessionCheckv1.tokenVerification , editChatMessage)
         this.router.post('/chat/delete' , sessionCheckv1.tokenVerification ,DeleteChat )
-        this.router.post("/chat/unsubscribe/:reviewId" , sessionCheckv1.tokenVerification , unsubscribeFromTopic)
+        this.router.post("/chat/unsubscribe/:reviewId" , sessionCheckv1.tokenVerification , unsubscribeFromTopic),
+        this.router.get('/chat/members/:reviewId' , findAddGroupMembers)
         return this.router
     }
 }

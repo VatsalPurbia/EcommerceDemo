@@ -124,3 +124,25 @@ User Authentication through SessionCheck TokenVerification
   - `200 OK`: Chat message deleted successfully.
   - `500 Internal Server Error`: Error while deleting the message.
 
+#### 9. Unsubscribe Group
+
+- **Description**: Unsubscribe to the group messages .
+- **URL**: `/product/chat/unsubscribe/:reviewId`
+- **Method**: `POST`
+- **Request params**:
+  - `reviewId1 (string) - Identifier for unsubscribing from a groupchat
+- **Response**:
+  - `200 OK`: Unsubscribed successfully.
+  - `500 Internal Server Error`: Error while  unsubscribing
+
+
+  #### 10. Get All Group Members 
+
+- **Description**: Unsubscribe to the group messages .
+- **URL**: `/product/chat/members/:reviewId`
+- **Method**: `GET`
+- **Request params**:
+  - `reviewId1 (string) - For finding all the members who have subed to the topic of this reveiwID 
+- **Response**:
+  - `200 OK`: Unsubscribed successfully.
+  - `500 Internal Server Error`: Error while Finding all group memebers
