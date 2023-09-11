@@ -144,5 +144,5 @@ User Authentication through SessionCheck TokenVerification
 - **Request params**:
   - `reviewId1 (string) - For finding all the members who have subed to the topic of this reveiwID 
 - **Response**:
-  - `200 OK`: Unsubscribed successfully.
+  - `200 OK`: All Members found successfully.
   - `500 Internal Server Error`: Error while Finding all group memebers
