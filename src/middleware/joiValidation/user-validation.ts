@@ -58,7 +58,11 @@ export const JOI_VALIDATION = {
             newPassword : Joi.string().min(8).max(30)
         }
 
-        
+    },
+    MQTTCHAT : {
+        SENDCHAT : {
+            message : Joi.string().min(1).max(200).required()
+        }
     }
    
 };

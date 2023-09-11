@@ -1,6 +1,6 @@
 import mongoose, { NumberSchemaDefinition, Schema } from "mongoose";
 import { mongo } from "../provider/mongo/mongo";
-import { COLLECTION, ChatStatus, USER_TYPE } from "../interface/enum";
+import { COLLECTION, ChatReaction, ChatStatus, USER_TYPE } from "../interface/enum";
 
 interface IChat extends Document {
   topic: string;
@@ -10,7 +10,9 @@ interface IChat extends Document {
   userId: Schema.Types.ObjectId;
   name: string;
   message: string;
-  status : ChatStatus;
+  status : string;
+  reaction : string;
+  reactionAddById : Schema.Types.ObjectId
 }
 
 const ChatSchema = new Schema<IChat>(
@@ -22,7 +24,16 @@ const ChatSchema = new Schema<IChat>(
     userId: { type: Schema.Types.ObjectId },
     name: String,
     message: String,
-    status : ChatStatus
+    status : {
+      type : String,
+      enum : Object.values(ChatStatus)
+    },
+    reaction : {
+      type : String,
+      enum : Object.values(ChatReaction)
+    },
+    reactionAddById : {type : Schema.Types.ObjectId}
+    
   },
   {
     timestamps: true,

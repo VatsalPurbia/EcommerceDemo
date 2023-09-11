@@ -46,7 +46,7 @@ class AdminsessionCheck {
         {}
       );
       if (data.length > 0) {
-        req.headers.adminId = decoded._id;
+        req.body.adminId = decoded._id;
         next();
       } else {
         throw new CustomException(

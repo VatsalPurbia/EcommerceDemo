@@ -160,7 +160,10 @@ export enum ExceptionMessage {
     FAILED_TO_CHANGE_PASSWORD = 'FAILED_TO_CHANGE_PASSWORD',
     MAIL_NOT_SENT = 'MAIL_NOT_SENT',
     PROBLEM_IN_ADDING_ADDRESS = 'PROBLEM_IN_ADDING_ADDRESS',
-    FAILED_TO_ADD_ADDRESS =  'FAILED_TO_ADD_ADDRESS' 
+    FAILED_TO_ADD_ADDRESS =  'FAILED_TO_ADD_ADDRESS',
+    INVALID_REACTION = 'INVALID_REACTION',
+    MESSAGE_NOT_FOUND = 'MESSAGE_NOT_FOUND',
+    ISSUE_IN_UNSUBSCRIBING = 'ISSUE_IN_UNSUBSCRIBING'
     
    
 }
@@ -187,7 +190,8 @@ export enum SuccessMessage {
     ALL_MESSAGES = 'ALL_MESSAGES',
     SUCCESSFULLY_LOGEDOUT = 'SUCCESSFULLY_LOGEDOUT',
     ADDRESS_ADDED  = 'ADDRESS_ADDED',
-    ALL_CHAT_DATA_FOUND ='ALL_CHAT_DATA_FOUND'          
+    ALL_CHAT_DATA_FOUND ='ALL_CHAT_DATA_FOUND',
+    GROUP_MEMBERS_FOUND = 'GROUP_MEMBERS_FOUND'         
 }
 
 export enum OrderStatus {
@@ -211,5 +215,16 @@ export enum OTP {
 
 export enum ChatStatus {
     DELIVERED = 'DELIVERED',
-    SEEN = 'SEEN'
+    SEEN = 'SEEN',
+    EDITED = 'EDITED',
+    DELETED = 'DELETED'
 }
+
+export enum  ChatReaction {
+    LIKE = "like",
+    LOVE = "love",
+    LAUGH = "laugh",
+    ANGRY = "angry",
+    SAD = "sad",
+    DELETED = 'DELETED'
+  }
